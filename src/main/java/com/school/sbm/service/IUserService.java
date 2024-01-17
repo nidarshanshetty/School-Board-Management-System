@@ -1,0 +1,19 @@
+package com.school.sbm.service;
+
+import org.springframework.http.ResponseEntity;
+
+import com.school.sbm.reqeustdto.UserRequest;
+import com.school.sbm.responsedto.UserResponse;
+import com.school.sbm.utility.ResponseStructure;
+
+
+public interface IUserService 
+{
+
+	ResponseEntity<ResponseStructure<UserResponse>> saveUser(UserRequest userRequest);
+
+	ResponseEntity<ResponseStructure<UserResponse>> findUser(Integer userId);
+
+	ResponseEntity<ResponseStructure<UserResponse>> deleteUser(Integer userId);
+
+}
