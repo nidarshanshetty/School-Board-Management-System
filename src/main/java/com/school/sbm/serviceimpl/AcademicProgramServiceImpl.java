@@ -1,5 +1,6 @@
 package com.school.sbm.serviceimpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
 import com.school.sbm.entity.School;
+import com.school.sbm.entity.Subject;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
 import com.school.sbm.repository.ISchoolRepository;
@@ -47,14 +49,25 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 				.build();
 	}
 
-	private AcademicProgramResponse mapToAcademicProgramResponse(AcademicProgram academicProgram )
+	public AcademicProgramResponse mapToAcademicProgramResponse(AcademicProgram academicProgram )
 	{
+		List<String>subjects= new ArrayList<String>();
+		List<Subject>listOfSubjects=academicProgram.getSubjects();
+
+		if(listOfSubjects!=null)
+		{
+			listOfSubjects.forEach(sub->{
+				subjects.add(sub.getSubjectNames());
+			});
+		}
+
 		return AcademicProgramResponse.builder()
 				.programId(academicProgram.getProgramId())
 				.programType(academicProgram.getProgramType())
 				.programName(academicProgram.getProgramName())
 				.beginsAt(academicProgram.getBeginsAt())
 				.endsAt(academicProgram.getEndsAt())
+				.subjects(academicProgram.getSubjects())
 				.build();
 	}
 

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
@@ -68,5 +69,9 @@ public class ApplicationExceptionHandler
 	{
 		return structure(HttpStatus.NOT_FOUND, ex.getMessage()," schedule not found by the specified Id" );
 	}
-
+	@ExceptionHandler(AcademicProgamNotFoundException.class)
+	public ResponseEntity<Object> handleacademicProgramNotFoundById(AcademicProgamNotFoundException ex)
+	{
+		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "academic Program Not Found By the specified Id");
+	}
 }
