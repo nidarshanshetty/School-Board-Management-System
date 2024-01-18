@@ -61,7 +61,7 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveAcaAcademicProgram(int schoolId,
+	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveAcademicProgram(int schoolId,
 			AcademicProgramRequest academicProgramRequest) {
 
 		School school = iSchoolRepository.findById(schoolId)
@@ -82,7 +82,7 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcaAcademicProgram(int schoolId)
+	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcademicProgram(int schoolId)
 	{
 		iSchoolRepository.findById(schoolId)
 		.orElseThrow(()-> new SchoolObjectNotFoundException("school not found"));
@@ -91,6 +91,13 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 		List<AcademicProgramResponse> collect = findAll.stream()
 				.map(u->mapToAcademicProgramResponse(u))
 				.collect(Collectors.toList());
+
+		if(findAll.isEmpty())
+		{
+			ListResponseStructure.setStatus(HttpStatus.FOUND.value());
+			ListResponseStructure.setMessage("AcademicProgram is empty");
+			ListResponseStructure.setData(collect);
+		}
 
 		ListResponseStructure.setStatus(HttpStatus.FOUND.value());
 		ListResponseStructure.setMessage("AcademicProgram found successfully");

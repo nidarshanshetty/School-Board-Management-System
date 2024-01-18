@@ -10,9 +10,9 @@ import com.school.sbm.utility.ResponseStructure;
 
 public interface IAcademicProgramService {
 
-	ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveAcaAcademicProgram(int schoolId,
+	ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveAcademicProgram(int schoolId,
 			AcademicProgramRequest academicProgramRequest);
 
-	ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcaAcademicProgram(int schoolId);
+	ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcademicProgram(int schoolId);
 
 }

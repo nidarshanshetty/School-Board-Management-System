@@ -23,15 +23,15 @@ public class AcademicProgramController
 
 
 	@PostMapping("/schools/{schoolId}/academic-programs")
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>>saveAcaAcademicProgram(@PathVariable int schoolId,@RequestBody AcademicProgramRequest academicProgramRequest)
+	public ResponseEntity<ResponseStructure<AcademicProgramResponse>>saveAcademicProgram(@PathVariable int schoolId,@RequestBody AcademicProgramRequest academicProgramRequest)
 	{
-		return iAcademicProgramService.saveAcaAcademicProgram(schoolId,academicProgramRequest);
+		return iAcademicProgramService.saveAcademicProgram(schoolId,academicProgramRequest);
 	}
 
 
 	@GetMapping("/schools/{schoolId}/academic-programs")
-	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>findAcaAcademicProgram(@PathVariable int schoolId)
+	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>findAcademicProgram(@PathVariable int schoolId)
 	{
-		return iAcademicProgramService.findAcaAcademicProgram(schoolId);
+		return iAcademicProgramService.findAcademicProgram(schoolId);
 	}
 }
