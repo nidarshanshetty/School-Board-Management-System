@@ -1,5 +1,8 @@
 package com.school.sbm.serviceimpl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,9 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 
 	@Autowired
 	private ResponseStructure<AcademicProgramResponse> responseStructure;
+
+	@Autowired
+	private ResponseStructure<List<AcademicProgramResponse>> ListResponseStructure;
 
 
 	private AcademicProgram mapToAcademicProgramRequest(AcademicProgramRequest academicProgramRequest)
@@ -73,6 +79,24 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 		responseStructure.setData(mapToAcademicProgramResponse(academicProgram));
 
 		return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(responseStructure,HttpStatus.CREATED);
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcaAcademicProgram(int schoolId)
+	{
+		iSchoolRepository.findById(schoolId)
+		.orElseThrow(()-> new SchoolObjectNotFoundException("school not found"));
+
+		List<AcademicProgram> findAll = iAcademicProgramRepository.findAll();
+		List<AcademicProgramResponse> collect = findAll.stream()
+				.map(u->mapToAcademicProgramResponse(u))
+				.collect(Collectors.toList());
+
+		ListResponseStructure.setStatus(HttpStatus.FOUND.value());
+		ListResponseStructure.setMessage("AcademicProgram found successfully");
+		ListResponseStructure.setData(collect);
+
+		return new ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>(ListResponseStructure,HttpStatus.FOUND);
 	}
 
 }
