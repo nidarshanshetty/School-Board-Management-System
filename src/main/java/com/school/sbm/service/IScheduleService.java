@@ -10,4 +10,8 @@ public interface IScheduleService {
 
 	ResponseEntity<ResponseStructure<ScheduleResponse>> saveSchedule(int schoolId, ScheduleRequest scheduleRequest);
 
+	ResponseEntity<ResponseStructure<ScheduleResponse>> findSchedule(int schoolId);
+
+	ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(int scheduleId, ScheduleRequest scheduleRequest);
+
 }

@@ -1,6 +1,7 @@
 package com.school.sbm.serviceimpl;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import com.school.sbm.entity.School;
 import com.school.sbm.entity.Schedule;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
+import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.repository.IScheduleRepository;
 import com.school.sbm.reqeustdto.ScheduleRequest;
@@ -26,7 +28,7 @@ public class ScheduleService implements IScheduleService
 	private ResponseStructure<ScheduleResponse> responseStructure;
 
 	@Autowired
-	private IScheduleRepository iSheduleRepository;
+	private IScheduleRepository iScheduleRepository;
 
 	@Autowired
 	private ISchoolRepository iSchoolRepository;
@@ -65,7 +67,7 @@ public class ScheduleService implements IScheduleService
 
 	@Override
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> saveSchedule(int schoolId,
-			ScheduleRequest sheduleRequest) 
+			ScheduleRequest scheduleRequest) 
 	{
 		School school = iSchoolRepository.findById(schoolId)
 				.orElseThrow(()-> new SchoolObjectNotFoundException("school not found"));
@@ -73,14 +75,14 @@ public class ScheduleService implements IScheduleService
 		if(school.getSchedule()==null)
 		{
 
-			System.out.println(sheduleRequest.getOpensAt());
-			Schedule shedule = iSheduleRepository.save(mapToScheduleRequest(sheduleRequest));
-			school.setSchedule(shedule);
+			System.out.println(scheduleRequest.getOpensAt());
+			Schedule schedule = iScheduleRepository.save(mapToScheduleRequest(scheduleRequest));
+			school.setSchedule(schedule);
 			iSchoolRepository.save(school);
 
 			responseStructure.setStatus(HttpStatus.CREATED.value());
-			responseStructure.setMessage("shedule saved successfully");
-			responseStructure.setData(mapToScheduleResponse(shedule));
+			responseStructure.setMessage("schedule saved successfully");
+			responseStructure.setData(mapToScheduleResponse(schedule));
 
 
 			return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.CREATED);
@@ -88,9 +90,53 @@ public class ScheduleService implements IScheduleService
 		}
 		else
 		{
-			throw new ScheduleAlreadyExistException("shedule already existed");
+			throw new ScheduleAlreadyExistException("schedule already existed");
 		}
 
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> findSchedule(int schoolId) 
+	{
+		School school = iSchoolRepository.findById(schoolId)
+				.orElseThrow(()->new SchoolObjectNotFoundException("school not found"));
+
+		Schedule schedule = school.getSchedule();
+		int scheduleId = schedule.getScheduleId();
+
+		Optional<Schedule> findById = iScheduleRepository.findById(scheduleId );
+		schedule= findById.get();
+
+		responseStructure.setStatus(HttpStatus.FOUND.value());
+		responseStructure.setMessage("shedule found successfully");
+		responseStructure.setData(mapToScheduleResponse(schedule));
+
+
+
+		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.FOUND);
+
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(int scheduleId,
+			ScheduleRequest scheduleRequest) {
+
+		Schedule schedule = iScheduleRepository.findById(scheduleId)
+				.map(u->{
+					Schedule mapToScheduleRequest = mapToScheduleRequest(scheduleRequest);
+					mapToScheduleRequest.setScheduleId(scheduleId);
+					return iScheduleRepository.save( mapToScheduleRequest );
+				})
+				.orElseThrow(()-> new ScheduleObjectNotFoundException("shedule not found") );
+
+
+
+		responseStructure.setStatus(HttpStatus.OK.value());
+		responseStructure.setMessage("shedule updated successfully");
+		responseStructure.setData(mapToScheduleResponse(schedule));
+
+
+		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.OK);
 	}
 
 }

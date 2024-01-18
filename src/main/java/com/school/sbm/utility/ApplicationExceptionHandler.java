@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
+import com.school.sbm.exception.ScheduleAlreadyExistException;
+import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
-import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 
 @RestControllerAdvice
@@ -60,6 +61,12 @@ public class ApplicationExceptionHandler
 	public ResponseEntity<Object> handlescheduleNotExist(ScheduleAlreadyExistException ex)
 	{
 		return structure(HttpStatus.FOUND, ex.getMessage(),"schedule already exist");
+	}
+
+	@ExceptionHandler(ScheduleObjectNotFoundException.class)
+	public ResponseEntity<Object> handlescheduleObjectNotFoundById(ScheduleObjectNotFoundException ex)
+	{
+		return structure(HttpStatus.NOT_FOUND, ex.getMessage()," schedule not found by the specified Id" );
 	}
 
 }
