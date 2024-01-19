@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.school.sbm.entity.User;
 import com.school.sbm.enums.UserRole;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
+import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.UserRequest;
@@ -63,7 +64,7 @@ public class UserServiceIMPL implements IUserService
 				User user = iuserRepository.save(mapToUserRequest(userRequest));
 
 				responseStructure.setStatus(HttpStatus.CREATED.value());
-				responseStructure.setMessage("user saved successfully");
+				responseStructure.setMessage("admine loggedIn successfully");
 				responseStructure.setData(mapToUserResponse(user));
 
 				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
@@ -75,12 +76,19 @@ public class UserServiceIMPL implements IUserService
 		}
 		else
 		{
-			User user = iuserRepository.save(mapToUserRequest(userRequest));
-			responseStructure.setStatus(HttpStatus.CREATED.value());
-			responseStructure.setMessage("user saved successfully");
-			responseStructure.setData(mapToUserResponse(user));
+			if( iuserRepository.existsByUserRole(UserRole.ADMIN))
+			{
+				User user = iuserRepository.save(mapToUserRequest(userRequest));
+				responseStructure.setStatus(HttpStatus.CREATED.value());
+				responseStructure.setMessage("user saved successfully");
+				responseStructure.setData(mapToUserResponse(user));
 
-			return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
+				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
+			}
+			else
+			{
+				throw new AdminNotFoundException("admine not found");
+			}
 		}
 	}
 	@Override

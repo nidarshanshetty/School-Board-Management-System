@@ -50,7 +50,7 @@ public class ApplicationExceptionHandler
 	@ExceptionHandler(AdminNotFoundException.class)
 	public ResponseEntity<Object> handleadminNotFound(AdminNotFoundException ex)
 	{
-		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "admin not found by the specified Id ");
+		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "admin not existed");
 	}
 
 	@ExceptionHandler(SchoolAlreadyExistException.class)

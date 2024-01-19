@@ -36,21 +36,34 @@ public class SubjectServiceImpl implements ISubjectService
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> addSubject(int programId,
 			SubjectRequest subjectRequest)
 	{
-		return iAcademicProgramRepository.findById(programId).map(program->{
-			List<Subject>subjects=new ArrayList<Subject>();
+		return iAcademicProgramRepository.findById(programId).map(program->{ //found academic program
+			List<Subject>subjects= (program.getSubjects()!= null)?program.getSubjects(): new ArrayList<Subject>();
+
+			//to add new subjects that are specified by the client
 			subjectRequest.getSubjectNames().forEach(name->{
-
-				Subject subject = iSubjectRepository.findBySubjectNames(name).map(s->s).orElseGet(()->{
-					Subject subject2 =new  Subject();
-					subject2.setSubjectNames(name);
-					iSubjectRepository.save(subject2);
-
-					return subject2;
-				});
-				subjects.add(subject);
+				boolean isPresent =false;
+				for(Subject subject:subjects) {
+					isPresent = (name.equalsIgnoreCase(subject.getSubjectNames()))?true:false;
+					if(isPresent)break;
+				}
+				if(!isPresent)subjects.add(iSubjectRepository.findBySubjectNames(name)
+						.orElseGet(()-> iSubjectRepository.save(Subject.builder().subjectNames(name).build())));
 			});
-			program.setSubjects(subjects);
-			iAcademicProgramRepository.save(program);
+			//to remove the subjects that are not specified by the client
+			List<Subject>toBeRemoved= new ArrayList<Subject>();
+			subjects.forEach(subject->{
+				boolean isPresent = false;
+				for(String name:subjectRequest.getSubjectNames()) {
+					isPresent=(subject.getSubjectNames().equalsIgnoreCase(name))?true :false;
+					if(!isPresent)break;
+				}
+				if(!isPresent)toBeRemoved.add(subject);
+			});
+			subjects.removeAll(toBeRemoved);
+
+
+			program.setSubjects(subjects);//set subjects list to the academic program
+			iAcademicProgramRepository.save(program);//saving updated program to the database
 			responseStructure.setStatus(HttpStatus.CREATED.value());
 			responseStructure.setMessage("updated the subject list to academic program");
 			responseStructure.setData(academicProgramServiceImpl.mapToAcademicProgramResponse(program));
