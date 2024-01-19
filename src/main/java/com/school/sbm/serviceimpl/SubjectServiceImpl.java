@@ -2,6 +2,7 @@ package com.school.sbm.serviceimpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import com.school.sbm.repository.IAcademicProgramRepository;
 import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.reqeustdto.SubjectRequest;
 import com.school.sbm.responsedto.AcademicProgramResponse;
+import com.school.sbm.responsedto.SubjectResponse;
 import com.school.sbm.service.ISubjectService;
 import com.school.sbm.utility.ResponseStructure;
 
@@ -30,7 +32,21 @@ public class SubjectServiceImpl implements ISubjectService
 	private ResponseStructure<AcademicProgramResponse> responseStructure;
 
 	@Autowired
+	private ResponseStructure<List<SubjectResponse>> structure;
+
+	@Autowired
 	private AcademicProgramServiceImpl academicProgramServiceImpl;
+
+
+	private SubjectResponse mapToSubjectResponse(Subject subject)
+	{
+		return SubjectResponse.builder()
+				.subjectId(subject.getSubjectId())
+				.subjectNames(subject.getSubjectNames())
+				.build();
+
+	}
+
 
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> addSubject(int programId,
@@ -70,6 +86,24 @@ public class SubjectServiceImpl implements ISubjectService
 			return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(responseStructure,HttpStatus.CREATED);
 		}).orElseThrow(()-> new AcademicProgamNotFoundException("AcademicProgram not found"));
 
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects() 
+	{
+		List<Subject> findAll = iSubjectRepository.findAll();
+
+		List<SubjectResponse> collect = findAll.stream()
+				.map(u->mapToSubjectResponse(u))
+				.collect(Collectors.toList());
+
+
+
+		structure.setStatus(HttpStatus.FOUND.value());
+		structure.setMessage(" sujects found successfully ");
+		structure.setData(collect);
+
+		return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(structure,HttpStatus.FOUND);
 	}
 
 }

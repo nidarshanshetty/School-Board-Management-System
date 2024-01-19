@@ -1,7 +1,10 @@
 package com.school.sbm.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.school.sbm.reqeustdto.SubjectRequest;
 import com.school.sbm.responsedto.AcademicProgramResponse;
+import com.school.sbm.responsedto.SubjectResponse;
 import com.school.sbm.service.ISubjectService;
 import com.school.sbm.utility.ResponseStructure;
 
@@ -24,4 +28,11 @@ public class SubjectController
 	{
 		return iSubjectService.addSubject(programId,subjectRequest);
 	}
+
+	@GetMapping("/subjects")
+	public ResponseEntity<ResponseStructure<List<SubjectResponse>>>findAllSubjects()
+	{
+		return iSubjectService.findAllSubjects();
+	}
+
 }

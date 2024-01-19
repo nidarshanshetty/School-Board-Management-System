@@ -11,4 +11,5 @@ import com.school.sbm.entity.Subject;
 public interface ISubjectRepository extends JpaRepository<Subject, Integer>
 {
 	Optional<Subject>findBySubjectNames(String name);
+
 }
