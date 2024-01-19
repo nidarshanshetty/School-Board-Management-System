@@ -1,18 +1,25 @@
 package com.school.sbm.serviceimpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
+import com.school.sbm.entity.Subject;
 import com.school.sbm.entity.User;
 import com.school.sbm.enums.UserRole;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
+import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
+import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.UserRequest;
 import com.school.sbm.responsedto.UserResponse;
@@ -25,11 +32,15 @@ public class UserServiceIMPL implements IUserService
 	@Autowired
 	private IAcademicProgramRepository IAcademicProgramRepository;
 
-	@Autowired
-	private IUserRepository iuserRepository;
+	@Autowired	
+	private IUserRepository iUserRepository;
 
 	@Autowired
 	private ResponseStructure<UserResponse>responseStructure;
+
+	@Autowired
+	private ISubjectRepository  iSubjectRepository ;
+
 
 
 	private User mapToUserRequest(UserRequest userRequest)
@@ -46,6 +57,17 @@ public class UserServiceIMPL implements IUserService
 	}
 	private UserResponse mapToUserResponse(User user)
 	{
+
+		List<String>listOfAcademicProgram=new ArrayList<String>();
+
+		if(user.getAcademicProgram()!=null)
+		{
+			user.getAcademicProgram().forEach(academicProgram->{
+				listOfAcademicProgram.add(academicProgram.getProgramName());
+			});
+		}
+
+
 		return UserResponse.builder()
 				.userId(user.getUserId())
 				.username(user.getUsername())
@@ -54,6 +76,7 @@ public class UserServiceIMPL implements IUserService
 				.contactNo(user.getContactNo())
 				.email(user.getEmail())
 				.userRole(user.getUserRole())
+				.listAcademicProgram(listOfAcademicProgram)
 				.build();
 	}
 
@@ -63,9 +86,9 @@ public class UserServiceIMPL implements IUserService
 	{
 		if(userRequest.getUserRole().equals(UserRole.ADMIN))
 		{
-			if(iuserRepository.existsByUserRole(userRequest.getUserRole())==false)
+			if(iUserRepository.existsByUserRole(userRequest.getUserRole())==false)
 			{
-				User user = iuserRepository.save(mapToUserRequest(userRequest));
+				User user = iUserRepository.save(mapToUserRequest(userRequest));
 
 				responseStructure.setStatus(HttpStatus.CREATED.value());
 				responseStructure.setMessage("admine saved successfully");
@@ -81,7 +104,7 @@ public class UserServiceIMPL implements IUserService
 		else
 		{
 
-			User user = iuserRepository.save(mapToUserRequest(userRequest));
+			User user = iUserRepository.save(mapToUserRequest(userRequest));
 			responseStructure.setStatus(HttpStatus.CREATED.value());
 			responseStructure.setMessage("user saved successfully");
 			responseStructure.setData(mapToUserResponse(user));
@@ -94,7 +117,7 @@ public class UserServiceIMPL implements IUserService
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(Integer userId) 
 	{
 
-		User user = iuserRepository.findById(userId)
+		User user = iUserRepository.findById(userId)
 				.orElseThrow(()->new UserObjectNotFoundException("user not found"));
 
 		responseStructure.setStatus(HttpStatus.FOUND.value());
@@ -107,7 +130,7 @@ public class UserServiceIMPL implements IUserService
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> deleteUser(Integer userId)
 	{
-		User user = iuserRepository.findById(userId)
+		User user = iUserRepository.findById(userId)
 				.orElseThrow(()->new UserObjectNotFoundException("user not found"));
 
 		if(user.isDeleted()==true)
@@ -116,7 +139,7 @@ public class UserServiceIMPL implements IUserService
 		}
 
 		user.setDeleted(true);
-		User save = iuserRepository.save(user);
+		User save = iUserRepository.save(user);
 
 
 		responseStructure.setStatus(HttpStatus.OK.value());
@@ -129,7 +152,7 @@ public class UserServiceIMPL implements IUserService
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> assignUser(int userId, int programId) 
 	{
-		User user = iuserRepository.findById(userId)
+		User user = iUserRepository.findById(userId)
 				.orElseThrow(()-> new UserObjectNotFoundException("user not found"));
 
 		AcademicProgram academicProgram = IAcademicProgramRepository.findById(programId)
@@ -137,23 +160,52 @@ public class UserServiceIMPL implements IUserService
 
 		if(user.getUserRole().equals(UserRole.ADMIN))
 		{
-			throw new AdmineCannotBeAssignedToAcademicProgram("admine cannot assign");
+			throw new AdmineCannotBeAssignedToAcademicProgram("admin cannot assign");
 		}
 		else
 		{
 			user.getAcademicProgram().add(academicProgram);
-			iuserRepository.save(user);
+			iUserRepository.save(user);
 			academicProgram.getUsers().add(user);
 			IAcademicProgramRepository.save(academicProgram );
 
 			responseStructure.setStatus(HttpStatus.OK.value());
-			responseStructure.setMessage("updated successfully");
+			responseStructure.setMessage("user associated with academic program successfully");
 			responseStructure.setData(mapToUserResponse(user));
 
 
 			return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
 		}
 	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> addSubjectToTheTeacher(int subjectId, int userId) 
+	{
+		Subject subject = iSubjectRepository.findById(subjectId)
+				.orElseThrow(()-> new SubjectNotFoundException("subject not found"));
+
+		User user = iUserRepository.findById(userId)
+				.orElseThrow(()-> new UserObjectNotFoundException("user not found"));
+
+		if(user.getUserRole().equals(UserRole.TEACHER))
+		{
+
+			user.setSubject(subject);
+			iUserRepository.save(user);
+
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("subject added to the teacher successfully");
+			responseStructure.setData(mapToUserResponse(user));
+
+			return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
+
+		}
+		else
+		{
+			throw new OnlyTeacherCanBeAssignedToSubjectException("user is not a teacher");
+		}
+	}
+
 
 }
 

@@ -15,4 +15,6 @@ public interface ISubjectService {
 
 	ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects();
 
+
+
 }

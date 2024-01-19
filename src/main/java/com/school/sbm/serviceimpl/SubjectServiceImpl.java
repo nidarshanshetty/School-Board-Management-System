@@ -38,6 +38,7 @@ public class SubjectServiceImpl implements ISubjectService
 	private AcademicProgramServiceImpl academicProgramServiceImpl;
 
 
+
 	private SubjectResponse mapToSubjectResponse(Subject subject)
 	{
 		return SubjectResponse.builder()
@@ -71,7 +72,7 @@ public class SubjectServiceImpl implements ISubjectService
 				boolean isPresent = false;
 				for(String name:subjectRequest.getSubjectNames()) {
 					isPresent=(subject.getSubjectNames().equalsIgnoreCase(name))?true :false;
-					if(!isPresent)break;
+					if(isPresent)break;
 				}
 				if(!isPresent)toBeRemoved.add(subject);
 			});
@@ -105,5 +106,7 @@ public class SubjectServiceImpl implements ISubjectService
 
 		return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(structure,HttpStatus.FOUND);
 	}
+
+
 
 }

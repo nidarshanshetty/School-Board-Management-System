@@ -45,4 +45,8 @@ public class User
 
 	@ManyToMany(mappedBy = "users")
 	private List<AcademicProgram>academicProgram;
+
+
+	@ManyToOne
+	private Subject subject;
 }

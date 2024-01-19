@@ -18,4 +18,6 @@ public interface IUserService
 
 	ResponseEntity<ResponseStructure<UserResponse>> assignUser(int userId, int programId);
 
+	ResponseEntity<ResponseStructure<UserResponse>> addSubjectToTheTeacher(int subjectId, int userId);
+
 }

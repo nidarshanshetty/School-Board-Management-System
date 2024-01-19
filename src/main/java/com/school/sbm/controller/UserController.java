@@ -44,4 +44,10 @@ public class UserController
 		return iUserService.assignUser(userId,programId);
 	}
 
+	@PutMapping("/subjects/{subjectId}/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>>addSubjectToTheTeacher(@PathVariable int subjectId,@PathVariable int userId)
+	{
+		return iUserService.addSubjectToTheTeacher(subjectId,userId);
+	}
+
 }
