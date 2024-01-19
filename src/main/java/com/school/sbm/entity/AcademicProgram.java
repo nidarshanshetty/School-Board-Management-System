@@ -39,4 +39,7 @@ public class AcademicProgram
 	@ManyToMany
 	private List<Subject>subjects;
 
+	@ManyToMany
+	private List<User>users;
+
 }

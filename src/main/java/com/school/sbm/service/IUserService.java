@@ -16,4 +16,6 @@ public interface IUserService
 
 	ResponseEntity<ResponseStructure<UserResponse>> deleteUser(Integer userId);
 
+	ResponseEntity<ResponseStructure<UserResponse>> assignUser(int userId, int programId);
+
 }

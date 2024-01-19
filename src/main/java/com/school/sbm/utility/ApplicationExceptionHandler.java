@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
+import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
@@ -74,4 +75,10 @@ public class ApplicationExceptionHandler
 	{
 		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "academic Program Not Found By the specified Id");
 	}
+	@ExceptionHandler(AdmineCannotBeAssignedToAcademicProgram.class)
+	public ResponseEntity<Object> handleadmineCannotBeAssignedToAcademicProgram(AdmineCannotBeAssignedToAcademicProgram ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "admine cannot assign to academic program");
+	}
+
 }

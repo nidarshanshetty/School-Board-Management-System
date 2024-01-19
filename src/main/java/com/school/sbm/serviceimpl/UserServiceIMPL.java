@@ -5,11 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.school.sbm.entity.AcademicProgram;
 import com.school.sbm.entity.User;
 import com.school.sbm.enums.UserRole;
+import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
-import com.school.sbm.exception.AdminNotFoundException;
+import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.UserObjectNotFoundException;
+import com.school.sbm.repository.IAcademicProgramRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.UserRequest;
 import com.school.sbm.responsedto.UserResponse;
@@ -19,7 +22,8 @@ import com.school.sbm.utility.ResponseStructure;
 @Service
 public class UserServiceIMPL implements IUserService
 {
-
+	@Autowired
+	private IAcademicProgramRepository IAcademicProgramRepository;
 
 	@Autowired
 	private IUserRepository iuserRepository;
@@ -64,7 +68,7 @@ public class UserServiceIMPL implements IUserService
 				User user = iuserRepository.save(mapToUserRequest(userRequest));
 
 				responseStructure.setStatus(HttpStatus.CREATED.value());
-				responseStructure.setMessage("admine loggedIn successfully");
+				responseStructure.setMessage("admine saved successfully");
 				responseStructure.setData(mapToUserResponse(user));
 
 				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
@@ -76,19 +80,14 @@ public class UserServiceIMPL implements IUserService
 		}
 		else
 		{
-			if( iuserRepository.existsByUserRole(UserRole.ADMIN))
-			{
-				User user = iuserRepository.save(mapToUserRequest(userRequest));
-				responseStructure.setStatus(HttpStatus.CREATED.value());
-				responseStructure.setMessage("user saved successfully");
-				responseStructure.setData(mapToUserResponse(user));
 
-				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
-			}
-			else
-			{
-				throw new AdminNotFoundException("admine not found");
-			}
+			User user = iuserRepository.save(mapToUserRequest(userRequest));
+			responseStructure.setStatus(HttpStatus.CREATED.value());
+			responseStructure.setMessage("user saved successfully");
+			responseStructure.setData(mapToUserResponse(user));
+
+			return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
+
 		}
 	}
 	@Override
@@ -126,6 +125,34 @@ public class UserServiceIMPL implements IUserService
 
 
 		return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
+	}
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> assignUser(int userId, int programId) 
+	{
+		User user = iuserRepository.findById(userId)
+				.orElseThrow(()-> new UserObjectNotFoundException("user not found"));
+
+		AcademicProgram academicProgram = IAcademicProgramRepository.findById(programId)
+				.orElseThrow(()->new AcademicProgamNotFoundException("AcademicProgam not found"));
+
+		if(user.getUserRole().equals(UserRole.ADMIN))
+		{
+			throw new AdmineCannotBeAssignedToAcademicProgram("admine cannot assign");
+		}
+		else
+		{
+			user.getAcademicProgram().add(academicProgram);
+			iuserRepository.save(user);
+			academicProgram.getUsers().add(user);
+			IAcademicProgramRepository.save(academicProgram );
+
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("updated successfully");
+			responseStructure.setData(mapToUserResponse(user));
+
+
+			return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
+		}
 	}
 
 }
