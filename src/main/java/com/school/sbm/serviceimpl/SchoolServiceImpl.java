@@ -23,7 +23,7 @@ import com.school.sbm.service.ISchoolService;
 import com.school.sbm.utility.ResponseStructure;
 
 @Service
-public class SchoolServiceIMPL  implements ISchoolService
+public class SchoolServiceImpl  implements ISchoolService
 {
 	@Autowired
 	private IUserRepository  iUserRepository;

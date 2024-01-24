@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
@@ -27,7 +28,7 @@ import com.school.sbm.service.IUserService;
 import com.school.sbm.utility.ResponseStructure;
 
 @Service
-public class UserServiceIMPL implements IUserService
+public class UserServiceImpl implements IUserService
 {
 	@Autowired
 	private IAcademicProgramRepository IAcademicProgramRepository;
@@ -41,13 +42,15 @@ public class UserServiceIMPL implements IUserService
 	@Autowired
 	private ISubjectRepository  iSubjectRepository ;
 
+	@Autowired
+	private PasswordEncoder encoder;
 
 
 	private User mapToUserRequest(UserRequest userRequest)
 	{
 		return User.builder()
 				.username(userRequest.getUsername())
-				.password(userRequest.getPassword())
+				.password(encoder.encode(userRequest.getPassword()))
 				.firstName(userRequest.getFirstName())
 				.lastName(userRequest.getLastName())
 				.contactNo(userRequest.getContactNo())

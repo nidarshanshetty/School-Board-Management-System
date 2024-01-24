@@ -47,7 +47,7 @@ public class ApplicationExceptionHandler
 	@ExceptionHandler(AdminAlreadyExistExceptoon.class)
 	public ResponseEntity<Object> handleAdminAlreadyExist(AdminAlreadyExistExceptoon ex)
 	{
-		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "admin already exist");
+		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "admin already existed");
 	}
 
 	@ExceptionHandler(AdminNotFoundException.class)
@@ -59,12 +59,12 @@ public class ApplicationExceptionHandler
 	@ExceptionHandler(SchoolAlreadyExistException.class)
 	public ResponseEntity<Object> handleSchoolAlreadyExist(SchoolAlreadyExistException ex)
 	{
-		return structure(HttpStatus.FOUND,ex.getMessage(), "school already exist");
+		return structure(HttpStatus.FOUND,ex.getMessage(), "school already existed");
 	}
 	@ExceptionHandler(ScheduleAlreadyExistException.class)
 	public ResponseEntity<Object> handleScheduleNotExist(ScheduleAlreadyExistException ex)
 	{
-		return structure(HttpStatus.FOUND, ex.getMessage(),"schedule already exist");
+		return structure(HttpStatus.FOUND, ex.getMessage(),"schedule already existed");
 	}
 
 	@ExceptionHandler(ScheduleObjectNotFoundException.class)

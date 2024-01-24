@@ -22,7 +22,7 @@ public class UserController
 	@Autowired
 	private IUserService  iUserService ;
 
-	@PostMapping("/users")
+	@PostMapping("/users/register")
 	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(@RequestBody  UserRequest userRequest)
 	{
 		System.out.println("controller");

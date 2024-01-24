@@ -21,7 +21,7 @@ import com.school.sbm.service.IScheduleService;
 import com.school.sbm.utility.ResponseStructure;
 
 @Service
-public class ScheduleService implements IScheduleService
+public class ScheduleServiceImpl implements IScheduleService
 {
 
 	@Autowired
@@ -36,7 +36,7 @@ public class ScheduleService implements IScheduleService
 	private Schedule mapToScheduleRequest(ScheduleRequest scheduleRequest)
 	{
 
-		System.out.println("Hello");
+		
 		return Schedule.builder()
 				.opensAt(scheduleRequest.getOpensAt())
 				.closesAt(scheduleRequest.getClosesAt())
@@ -75,7 +75,6 @@ public class ScheduleService implements IScheduleService
 		if(school.getSchedule()==null)
 		{
 
-			System.out.println(scheduleRequest.getOpensAt());
 			Schedule schedule = iScheduleRepository.save(mapToScheduleRequest(scheduleRequest));
 			school.setSchedule(schedule);
 			iSchoolRepository.save(school);
