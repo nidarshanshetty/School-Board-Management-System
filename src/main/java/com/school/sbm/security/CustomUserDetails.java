@@ -1,25 +1,28 @@
 package com.school.sbm.security;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.school.sbm.entity.User;
 
 public class CustomUserDetails implements UserDetails
 {
-
 	User user;
+
 	public CustomUserDetails(User user)
 	{
 		this.user=user;
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<? extends GrantedAuthority> getAuthorities() 
+	{
+				return Collections.singleton(new SimpleGrantedAuthority(user.getUserRole().name()));
+//		return  null;
 	}
 
 	@Override

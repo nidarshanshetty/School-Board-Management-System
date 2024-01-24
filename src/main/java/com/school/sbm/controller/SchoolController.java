@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,12 +25,13 @@ public class SchoolController
 	@Autowired
 	private ISchoolService iSchoolService;
 
-
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/users/{userId}/schools")
 	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(@PathVariable Integer userId,@RequestBody  SchoolRequest school)
 	{
 		return iSchoolService.saveSchool(userId,school);
 	}
+
 
 	@PutMapping("/schools/{schoolId}")
 	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(@PathVariable int schoolId,@RequestBody SchoolRequest school)
@@ -42,6 +44,8 @@ public class SchoolController
 	{
 		return iSchoolService.findAllSchool();
 	}
+
+
 	@DeleteMapping("/schools/{schoolId}")
 	public ResponseEntity<ResponseStructure<SchoolResponse>> deleteSchool(@PathVariable int schoolId)
 	{

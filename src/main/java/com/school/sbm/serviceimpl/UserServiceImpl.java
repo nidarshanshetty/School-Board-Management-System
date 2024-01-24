@@ -15,6 +15,7 @@ import com.school.sbm.entity.User;
 import com.school.sbm.enums.UserRole;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
+import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sbm.exception.SubjectNotFoundException;
@@ -106,14 +107,20 @@ public class UserServiceImpl implements IUserService
 		}
 		else
 		{
+			if(iUserRepository.existsByUserRole(UserRole.ADMIN))
+			{
 
-			User user = iUserRepository.save(mapToUserRequest(userRequest));
-			responseStructure.setStatus(HttpStatus.CREATED.value());
-			responseStructure.setMessage("user saved successfully");
-			responseStructure.setData(mapToUserResponse(user));
+				User user = iUserRepository.save(mapToUserRequest(userRequest));
+				responseStructure.setStatus(HttpStatus.CREATED.value());
+				responseStructure.setMessage("user saved successfully");
+				responseStructure.setData(mapToUserResponse(user));
 
-			return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
-
+				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
+			}
+			else
+			{
+				throw new AdminNotFoundException("admine not found");
+			}
 		}
 	}
 	@Override
@@ -207,6 +214,60 @@ public class UserServiceImpl implements IUserService
 		{
 			throw new OnlyTeacherCanBeAssignedToSubjectException("user is not a teacher");
 		}
+	}
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(UserRequest userRequest) 
+	{
+		if(userRequest.getUserRole().equals(UserRole.ADMIN))
+		{
+			if(iUserRepository.existsByUserRole(userRequest.getUserRole())==false)
+			{
+				User user = iUserRepository.save(mapToUserRequest(userRequest));
+
+				responseStructure.setStatus(HttpStatus.CREATED.value());
+				responseStructure.setMessage("admine saved successfully");
+				responseStructure.setData(mapToUserResponse(user));
+
+				return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
+			}
+			else
+			{
+				throw new AdminAlreadyExistExceptoon("Admin already existed");
+			}
+		}
+		else
+		{
+			throw new AdminNotFoundException("admin not found");
+		}
+
+	}
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> addOtherUsers(UserRequest userRequest) 
+	{
+		if(userRequest.getUserRole().equals(UserRole.ADMIN))
+		{
+			throw new AdminNotFoundException("admin not allowed");
+		}
+		else
+		{
+			if(iUserRepository.existsByUserRole(UserRole.ADMIN)==true)
+			{
+
+				User save = iUserRepository.save(mapToUserRequest(userRequest));
+
+				responseStructure.setStatus(HttpStatus.CREATED.value());
+				responseStructure.setMessage("users saved successfully");
+				responseStructure.setData(mapToUserResponse(save));
+
+
+				return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
+			}
+			else
+			{
+				throw new AdminNotFoundException("admin not found ");
+			}
+		}
+
 	}
 
 

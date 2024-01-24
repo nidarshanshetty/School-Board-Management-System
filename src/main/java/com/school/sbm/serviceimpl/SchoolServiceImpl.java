@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.School;
@@ -14,7 +16,6 @@ import com.school.sbm.enums.UserRole;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
-import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.SchoolRequest;
@@ -62,8 +63,12 @@ public class SchoolServiceImpl  implements ISchoolService
 	@Override
 	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(Integer userId, SchoolRequest school) 
 	{
-		User user = iUserRepository.findById(userId)
-				.orElseThrow(()-> new UserObjectNotFoundException("user not found"));
+		String userName=SecurityContextHolder.getContext()
+				.getAuthentication()
+				.getName();
+
+		User user = iUserRepository.findByUsername(userName)
+				.orElseThrow(()-> new UsernameNotFoundException("username not found"));
 
 		if(user.getUserRole().equals(UserRole.ADMIN))
 		{
@@ -74,7 +79,7 @@ public class SchoolServiceImpl  implements ISchoolService
 				iUserRepository.save(user);
 
 				responseStructure.setStatus(HttpStatus.CREATED.value());
-				responseStructure.setMessage("School  Created");
+				responseStructure.setMessage("School  Created successfully");
 				responseStructure.setData(mapToSchoolResponse(save));
 
 				return new  ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.CREATED);
@@ -108,7 +113,7 @@ public class SchoolServiceImpl  implements ISchoolService
 
 
 		responseStructure.setStatus(HttpStatus.OK.value());
-		responseStructure.setMessage("School Updated");
+		responseStructure.setMessage("School Updated successfully");
 		responseStructure.setData(mapToSchoolResponse(save));
 
 		return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.OK);
@@ -127,7 +132,7 @@ public class SchoolServiceImpl  implements ISchoolService
 
 
 		structure.setStatus(HttpStatus.FOUND.value());
-		structure.setMessage("School Found");
+		structure.setMessage("School Found successfully");
 		structure.setData(collect );
 
 		return new ResponseEntity<ResponseStructure<List<SchoolResponse>>>(structure,HttpStatus.FOUND);
@@ -141,7 +146,7 @@ public class SchoolServiceImpl  implements ISchoolService
 
 
 		responseStructure.setStatus(HttpStatus.OK.value());
-		responseStructure.setMessage("school deleted");
+		responseStructure.setMessage("school deleted successfully");
 		responseStructure.setData(mapToSchoolResponse(save));
 
 		return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.OK);
@@ -155,7 +160,7 @@ public class SchoolServiceImpl  implements ISchoolService
 
 
 		responseStructure.setStatus(HttpStatus.FOUND.value());
-		responseStructure.setMessage("School found");
+		responseStructure.setMessage("School found successfully");
 		responseStructure.setData(mapToSchoolResponse(save));
 
 		return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.FOUND);

@@ -20,4 +20,8 @@ public interface IUserService
 
 	ResponseEntity<ResponseStructure<UserResponse>> addSubjectToTheTeacher(int subjectId, int userId);
 
+	ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(UserRequest userRequest);
+
+	ResponseEntity<ResponseStructure<UserResponse>> addOtherUsers(UserRequest userRequest);
+
 }
