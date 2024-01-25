@@ -61,7 +61,7 @@ public class SchoolServiceImpl  implements ISchoolService
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(Integer userId, SchoolRequest school) 
+	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(Integer userId, SchoolRequest schoolRequest) 
 	{
 		String userName=SecurityContextHolder.getContext()
 				.getAuthentication()
@@ -74,13 +74,16 @@ public class SchoolServiceImpl  implements ISchoolService
 		{
 			if(user.getSchool()==null)
 			{
-				School save = iSchoolRepository.save(mapToSchoolRequest(school));
-				user.setSchool(save);
-				iUserRepository.save(user);
+				School school = iSchoolRepository.save(mapToSchoolRequest(schoolRequest));
+				iUserRepository.findAll().forEach(userFromRepo->{
+					userFromRepo.setSchool(school);
+					iUserRepository.save(user);
+				});
+
 
 				responseStructure.setStatus(HttpStatus.CREATED.value());
 				responseStructure.setMessage("School  Created successfully");
-				responseStructure.setData(mapToSchoolResponse(save));
+				responseStructure.setData(mapToSchoolResponse(school));
 
 				return new  ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.CREATED);
 			}

@@ -10,7 +10,6 @@ import com.school.sbm.utility.ResponseStructure;
 public interface IUserService 
 {
 
-	ResponseEntity<ResponseStructure<UserResponse>> saveUser(UserRequest userRequest);
 
 	ResponseEntity<ResponseStructure<UserResponse>> findUser(Integer userId);
 
@@ -23,5 +22,6 @@ public interface IUserService
 	ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(UserRequest userRequest);
 
 	ResponseEntity<ResponseStructure<UserResponse>> addOtherUsers(UserRequest userRequest);
+
 
 }

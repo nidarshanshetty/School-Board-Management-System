@@ -9,4 +9,6 @@ import com.school.sbm.entity.School;
 public interface ISchoolRepository extends JpaRepository<School, Integer>
 {
 
+
+
 }

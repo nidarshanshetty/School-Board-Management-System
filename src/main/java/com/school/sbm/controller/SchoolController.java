@@ -32,7 +32,7 @@ public class SchoolController
 		return iSchoolService.saveSchool(userId,school);
 	}
 
-
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/schools/{schoolId}")
 	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(@PathVariable int schoolId,@RequestBody SchoolRequest school)
 	{

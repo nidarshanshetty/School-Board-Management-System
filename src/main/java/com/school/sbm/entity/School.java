@@ -31,9 +31,12 @@ public class School
 	private String emailId;
 	private String address;
 
+
 	@OneToOne
 	private Schedule schedule;
 
 	@OneToMany(mappedBy = "school")
 	private List<AcademicProgram>aList;
+
+
 }

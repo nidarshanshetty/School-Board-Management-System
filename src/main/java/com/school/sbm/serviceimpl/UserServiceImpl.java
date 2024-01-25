@@ -2,14 +2,17 @@ package com.school.sbm.serviceimpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
+import com.school.sbm.entity.School;
 import com.school.sbm.entity.Subject;
 import com.school.sbm.entity.User;
 import com.school.sbm.enums.UserRole;
@@ -21,6 +24,7 @@ import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
+import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.UserRequest;
@@ -31,6 +35,9 @@ import com.school.sbm.utility.ResponseStructure;
 @Service
 public class UserServiceImpl implements IUserService
 {
+	@Autowired
+	private ISchoolRepository iSchoolRepository;
+
 	@Autowired
 	private IAcademicProgramRepository IAcademicProgramRepository;
 
@@ -85,44 +92,6 @@ public class UserServiceImpl implements IUserService
 	}
 
 
-	@Override
-	public  ResponseEntity<ResponseStructure<UserResponse>> saveUser(UserRequest userRequest) 
-	{
-		if(userRequest.getUserRole().equals(UserRole.ADMIN))
-		{
-			if(iUserRepository.existsByUserRole(userRequest.getUserRole())==false)
-			{
-				User user = iUserRepository.save(mapToUserRequest(userRequest));
-
-				responseStructure.setStatus(HttpStatus.CREATED.value());
-				responseStructure.setMessage("admine saved successfully");
-				responseStructure.setData(mapToUserResponse(user));
-
-				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
-			}
-			else
-			{
-				throw new AdminAlreadyExistExceptoon("admin already exist");
-			}
-		}
-		else
-		{
-			if(iUserRepository.existsByUserRole(UserRole.ADMIN))
-			{
-
-				User user = iUserRepository.save(mapToUserRequest(userRequest));
-				responseStructure.setStatus(HttpStatus.CREATED.value());
-				responseStructure.setMessage("user saved successfully");
-				responseStructure.setData(mapToUserResponse(user));
-
-				return new  ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.CREATED);
-			}
-			else
-			{
-				throw new AdminNotFoundException("admine not found");
-			}
-		}
-	}
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(Integer userId) 
 	{
@@ -244,6 +213,10 @@ public class UserServiceImpl implements IUserService
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> addOtherUsers(UserRequest userRequest) 
 	{
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+
 		if(userRequest.getUserRole().equals(UserRole.ADMIN))
 		{
 			throw new AdminNotFoundException("admin not allowed");
@@ -252,8 +225,16 @@ public class UserServiceImpl implements IUserService
 		{
 			if(iUserRepository.existsByUserRole(UserRole.ADMIN)==true)
 			{
+				Optional<User> optional = iUserRepository.findByUsername(username);
+				User user = optional.get();
+				School school = user.getSchool();
 
-				User save = iUserRepository.save(mapToUserRequest(userRequest));
+
+				user = iUserRepository.save(mapToUserRequest(userRequest));
+				user.setSchool(school);
+				User save = iUserRepository.save(user);
+
+
 
 				responseStructure.setStatus(HttpStatus.CREATED.value());
 				responseStructure.setMessage("users saved successfully");
@@ -269,6 +250,8 @@ public class UserServiceImpl implements IUserService
 		}
 
 	}
+
+
 
 
 }

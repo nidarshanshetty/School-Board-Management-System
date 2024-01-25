@@ -40,13 +40,6 @@ public class UserController
 	}
 
 
-	@PreAuthorize("hasAuthority('ADMIN')")
-	@PostMapping
-	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(@RequestBody  UserRequest userRequest)
-	{
-
-		return iUserService.saveUser(userRequest);
-	}
 
 	@GetMapping("/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(@PathVariable Integer userId)
@@ -61,16 +54,21 @@ public class UserController
 	{
 		return iUserService.deleteUser(userId);
 	}
+
+	@PreAuthorize("hasAuthority('ADMIN') ")
 	@PutMapping("/academic-programs/{programId}/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>>assignUser(@PathVariable int userId,@PathVariable int programId)
 	{
 		return iUserService.assignUser(userId,programId);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/subjects/{subjectId}/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>>addSubjectToTheTeacher(@PathVariable int subjectId,@PathVariable int userId)
 	{
 		return iUserService.addSubjectToTheTeacher(subjectId,userId);
 	}
+
+
 
 }
