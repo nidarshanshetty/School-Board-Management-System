@@ -24,7 +24,7 @@ public class SubjectController
 	@Autowired
 	private ISubjectService iSubjectService;
 
-	@PreAuthorize("hasAuthority('TEACHER')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/academic-programs/{programId}/subjects")
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>>addSubject(@PathVariable int programId,@RequestBody SubjectRequest subjectRequest)
 	{

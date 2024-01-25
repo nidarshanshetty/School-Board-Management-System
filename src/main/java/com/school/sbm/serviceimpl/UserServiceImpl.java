@@ -21,10 +21,10 @@ import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
+import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
-import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.UserRequest;
@@ -35,8 +35,7 @@ import com.school.sbm.utility.ResponseStructure;
 @Service
 public class UserServiceImpl implements IUserService
 {
-	@Autowired
-	private ISchoolRepository iSchoolRepository;
+
 
 	@Autowired
 	private IAcademicProgramRepository IAcademicProgramRepository;
@@ -143,17 +142,31 @@ public class UserServiceImpl implements IUserService
 		}
 		else
 		{
-			user.getAcademicProgram().add(academicProgram);
-			iUserRepository.save(user);
-			academicProgram.getUsers().add(user);
-			IAcademicProgramRepository.save(academicProgram );
+			if(user.getUserRole().equals(UserRole.TEACHER))
+			{
+				if(academicProgram.getSubjects().contains(user.getSubject()))
+				{
+					user.getAcademicProgram().add(academicProgram);
+					iUserRepository.save(user);
+					academicProgram.getUsers().add(user);
+					IAcademicProgramRepository.save(academicProgram );
 
-			responseStructure.setStatus(HttpStatus.OK.value());
-			responseStructure.setMessage("user associated with academic program successfully");
-			responseStructure.setData(mapToUserResponse(user));
+					responseStructure.setStatus(HttpStatus.OK.value());
+					responseStructure.setMessage("teacher associated with academic program successfully");
+					responseStructure.setData(mapToUserResponse(user));
 
 
-			return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
+					return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
+				}
+				else 
+				{
+					throw new SubjectNotFoundException("subject not found");
+				}
+			}
+			else 
+			{
+				throw new StudentCannotBeAssignedToAcademicProgram("student cannot assign");
+			}
 		}
 	}
 

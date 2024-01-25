@@ -16,6 +16,7 @@ import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
+import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 
@@ -92,5 +93,9 @@ public class ApplicationExceptionHandler
 	{
 		return structure(HttpStatus.NOT_FOUND,ex.getMessage(), "subject not found by the specified Id");
 	}
-
+	@ExceptionHandler(StudentCannotBeAssignedToAcademicProgram.class)
+	public ResponseEntity<Object> handleStudentCannotBeAssignedToAcademicProgramException(StudentCannotBeAssignedToAcademicProgram ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST,ex.getMessage() ,"student cannot assign to academic program");
+	}
 }
