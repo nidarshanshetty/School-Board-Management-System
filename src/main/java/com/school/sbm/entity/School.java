@@ -1,5 +1,6 @@
 package com.school.sbm.entity;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -30,6 +31,7 @@ public class School
 	private Long contactNo;
 	private String emailId;
 	private String address;
+	private DayOfWeek weekOffDay;
 
 
 	@OneToOne

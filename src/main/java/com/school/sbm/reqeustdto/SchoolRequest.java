@@ -11,4 +11,5 @@ public class SchoolRequest
 	private Long contactNo;
 	private String emailId;
 	private String address;
+	private String weekOffDay;
 }

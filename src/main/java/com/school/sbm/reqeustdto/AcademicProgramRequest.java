@@ -1,6 +1,6 @@
 package com.school.sbm.reqeustdto;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 import com.school.sbm.enums.ProgramType;
 
@@ -13,6 +13,6 @@ public class AcademicProgramRequest
 {
 	private ProgramType programType;
 	private String programName;
-	private LocalTime beginsAt;
-	private LocalTime endsAt;
+	private LocalDate beginsAt;
+	private LocalDate endsAt;
 }

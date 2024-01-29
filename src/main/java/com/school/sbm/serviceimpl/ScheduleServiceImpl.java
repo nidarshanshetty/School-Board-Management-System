@@ -35,8 +35,6 @@ public class ScheduleServiceImpl implements IScheduleService
 
 	private Schedule mapToScheduleRequest(ScheduleRequest scheduleRequest)
 	{
-
-		
 		return Schedule.builder()
 				.opensAt(scheduleRequest.getOpensAt())
 				.closesAt(scheduleRequest.getClosesAt())

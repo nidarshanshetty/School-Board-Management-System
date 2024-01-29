@@ -98,7 +98,7 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcademicProgram(int schoolId)
 	{
 		iSchoolRepository.findById(schoolId)
-		.orElseThrow(()-> new SchoolObjectNotFoundException("school not found"));
+		.orElseThrow(()-> new SchoolObjectNotFoundException("school not found by the specified id"));
 
 		List<AcademicProgram> findAll = iAcademicProgramRepository.findAll();
 		List<AcademicProgramResponse> collect = findAll.stream()
@@ -108,7 +108,7 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 		if(findAll.isEmpty())
 		{
 			ListResponseStructure.setStatus(HttpStatus.FOUND.value());
-			ListResponseStructure.setMessage("AcademicProgram is empty");
+			ListResponseStructure.setMessage("there is no data present in academic program");
 			ListResponseStructure.setData(collect);
 		}
 

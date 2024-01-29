@@ -9,6 +9,7 @@ import lombok.Setter;
 @Component
 @Setter
 @Getter
+
 public class ResponseStructure<T>
 {
 	private Integer status;

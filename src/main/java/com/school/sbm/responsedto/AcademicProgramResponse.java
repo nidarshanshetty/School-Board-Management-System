@@ -1,6 +1,6 @@
 package com.school.sbm.responsedto;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.school.sbm.entity.Subject;
@@ -18,7 +18,7 @@ public class AcademicProgramResponse
 	private int programId;
 	private ProgramType programType;
 	private String programName;
-	private LocalTime beginsAt;
-	private LocalTime endsAt;
+	private LocalDate beginsAt;
+	private LocalDate endsAt;
 	private List<Subject>subjects;
 }
