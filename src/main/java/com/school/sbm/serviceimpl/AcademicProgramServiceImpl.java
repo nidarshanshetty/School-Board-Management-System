@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.school.sbm.entity.AcademicProgram;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.Subject;
+import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
 import com.school.sbm.repository.ISchoolRepository;
@@ -117,6 +118,29 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 		ListResponseStructure.setData(collect);
 
 		return new ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>(ListResponseStructure,HttpStatus.FOUND);
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> deleteAcademicProgram(int programId)
+	{
+		AcademicProgram academicProgram = iAcademicProgramRepository.findById(programId)
+				.orElseThrow(()->new AcademicProgamNotFoundException("academic program not found"));
+
+		if(academicProgram.isDeleted()==true)
+		{
+			throw new AcademicProgamNotFoundException("academic program not found");
+		}
+		else
+		{
+			academicProgram.setDeleted(true);
+			AcademicProgram save = iAcademicProgramRepository.save(academicProgram);
+
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("academic program deleted successfully");
+			responseStructure.setData(mapToAcademicProgramResponse(save));
+			return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(responseStructure,HttpStatus.OK);
+		}
+
 	}
 
 }

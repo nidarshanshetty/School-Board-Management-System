@@ -37,5 +37,4 @@ public class SubjectController
 		return iSubjectService.findAllSubjects();
 	}
 
-
 }

@@ -284,4 +284,16 @@ public class ClassHourServiceImpl implements IClassHourService
 		return new ResponseEntity<ResponseStructure<List<ClassHourResponse>>>(responseStructure,HttpStatus.CREATED);
 	}
 
+	public void deleteClassHour(List<ClassHour> classHours)
+	{
+		for(ClassHour classHour:classHours)
+		{
+			int classHourId = classHour.getClassHourId();
+			ClassHour hour = classHourRepository.findById(classHourId)
+					.orElseThrow(()-> new ScheduleObjectNotFoundException(" not the exception"));
+
+			classHourRepository.delete(hour);
+		}
+	}
+
 }

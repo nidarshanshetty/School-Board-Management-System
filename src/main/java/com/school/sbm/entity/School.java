@@ -32,7 +32,7 @@ public class School
 	private String emailId;
 	private String address;
 	private DayOfWeek weekOffDay;
-
+	private boolean isDeleted;
 
 	@OneToOne
 	private Schedule schedule;

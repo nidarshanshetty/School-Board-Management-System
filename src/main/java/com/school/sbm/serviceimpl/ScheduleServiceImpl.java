@@ -136,4 +136,19 @@ public class ScheduleServiceImpl implements IScheduleService
 		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.OK);
 	}
 
+	public ResponseEntity<ResponseStructure<ScheduleResponse>>deleteSchedule(Schedule schedule)
+	{
+		int scheduleId = schedule.getScheduleId();
+
+		Schedule schedule1 = iScheduleRepository.findById(scheduleId)
+				.orElseThrow(()-> new ScheduleObjectNotFoundException("schedule not found"));
+
+		iScheduleRepository.delete(schedule1);
+
+		responseStructure.setStatus(HttpStatus.OK.value());
+		responseStructure.setMessage("schedule successfully deleted");
+		responseStructure.setData(mapToScheduleResponse(schedule1));
+
+		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.OK);
+	}
 }

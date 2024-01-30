@@ -147,15 +147,24 @@ public class SchoolServiceImpl  implements ISchoolService
 	@Override
 	public ResponseEntity<ResponseStructure<SchoolResponse>>deleteSchool(int schoolId) 
 	{
-		School save = iSchoolRepository.findById(schoolId)
+		School school = iSchoolRepository.findById(schoolId)
 				.orElseThrow(()->new SchoolObjectNotFoundException("School Not Found"));
 
+		if(school.isDeleted()==true)
+		{
+			throw new SchoolObjectNotFoundException("school not found");
+		}
+		else
+		{
+			school.setDeleted(true);
+			School save = iSchoolRepository.save(school);
 
-		responseStructure.setStatus(HttpStatus.OK.value());
-		responseStructure.setMessage("school deleted successfully");
-		responseStructure.setData(mapToSchoolResponse(save));
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("school deleted successfully");
+			responseStructure.setData(mapToSchoolResponse(save));
 
-		return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.OK);
+			return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.OK);
+		}
 	}
 
 	@Override

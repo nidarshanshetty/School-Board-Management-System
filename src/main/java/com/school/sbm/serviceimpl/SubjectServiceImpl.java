@@ -34,6 +34,7 @@ public class SubjectServiceImpl implements ISubjectService
 	@Autowired
 	private ResponseStructure<List<SubjectResponse>> structure;
 
+
 	@Autowired
 	private AcademicProgramServiceImpl academicProgramServiceImpl;
 
@@ -106,6 +107,7 @@ public class SubjectServiceImpl implements ISubjectService
 
 		return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(structure,HttpStatus.FOUND);
 	}
+
 
 
 

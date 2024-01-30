@@ -15,4 +15,6 @@ public interface IAcademicProgramService {
 
 	ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> findAcademicProgram(int schoolId);
 
+	ResponseEntity<ResponseStructure<AcademicProgramResponse>> deleteAcademicProgram(int programId);
+
 }
