@@ -1,8 +1,10 @@
 package com.school.sbm.serviceimpl;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +22,11 @@ import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.NoAssociatedObjectFoundException;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
-import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
+import com.school.sbm.exception.UserRoleIsNotExistedException;
 import com.school.sbm.repository.IAcademicProgramRepository;
 import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.repository.IUserRepository;
@@ -36,7 +39,6 @@ import com.school.sbm.utility.ResponseStructure;
 public class UserServiceImpl implements IUserService
 {
 
-
 	@Autowired
 	private IAcademicProgramRepository IAcademicProgramRepository;
 
@@ -45,6 +47,9 @@ public class UserServiceImpl implements IUserService
 
 	@Autowired
 	private ResponseStructure<UserResponse>responseStructure;
+
+	@Autowired
+	private ResponseStructure<List<UserResponse>>listResponseStructure;
 
 	@Autowired
 	private ISubjectRepository  iSubjectRepository ;
@@ -163,10 +168,21 @@ public class UserServiceImpl implements IUserService
 					throw new SubjectNotFoundException("subject not found");
 				}
 			}
-			else 
+			else
 			{
-				throw new StudentCannotBeAssignedToAcademicProgram("student cannot assign");
+				user.getAcademicProgram().add(academicProgram);
+				iUserRepository.save(user);
+				academicProgram.getUsers().add(user);
+				IAcademicProgramRepository.save(academicProgram );
+
+				responseStructure.setStatus(HttpStatus.OK.value());
+				responseStructure.setMessage("student associated with academic program successfully");
+				responseStructure.setData(mapToUserResponse(user));
+
+
+				return new ResponseEntity<ResponseStructure<UserResponse>>(responseStructure,HttpStatus.OK);
 			}
+
 		}
 	}
 
@@ -263,7 +279,51 @@ public class UserServiceImpl implements IUserService
 		}
 
 	}
+	@Override
+	public ResponseEntity<ResponseStructure<List<UserResponse>>> fetchUsersByRoleInAcademicProgram(int programId,
+			String role) 
+	{
 
+		UserRole userole = UserRole.valueOf(role.toUpperCase());
+		if(EnumSet.allOf(UserRole.class).contains(userole))
+		{
+			if(UserRole.ADMIN.equals(userole))
+			{
+				throw new AdmineCannotBeAssignedToAcademicProgram("admine is not assigned to academic program");
+			}
+			else
+			{
+
+				AcademicProgram academicProgram = IAcademicProgramRepository.findById(programId)
+						.orElseThrow(()-> new AcademicProgamNotFoundException("academic program not found"));
+
+				List<User> users = iUserRepository.findAllByUserRoleAndAcademicProgram(userole,academicProgram);
+
+				if(users.isEmpty())
+				{
+					throw new NoAssociatedObjectFoundException("there are no users associated with the academic program"+
+							programId+"with role"+role);
+				}
+				else
+				{
+
+					List<UserResponse> collect = users.stream()
+							.map(u->mapToUserResponse(u))
+							.collect(Collectors.toList());
+
+					listResponseStructure.setStatus(HttpStatus.FOUND.value());
+					listResponseStructure.setMessage("");
+					listResponseStructure.setData(collect);
+
+					return new ResponseEntity<ResponseStructure<List<UserResponse>>>(listResponseStructure,HttpStatus.FOUND);
+				}
+			}
+		}
+		else
+		{
+			throw new UserRoleIsNotExistedException("specified userrole is incorrect");
+		}
+	}
 
 
 

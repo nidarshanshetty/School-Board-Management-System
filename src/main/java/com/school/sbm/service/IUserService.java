@@ -1,5 +1,7 @@
 package com.school.sbm.service;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import com.school.sbm.reqeustdto.UserRequest;
@@ -22,6 +24,8 @@ public interface IUserService
 	ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(UserRequest userRequest);
 
 	ResponseEntity<ResponseStructure<UserResponse>> addOtherUsers(UserRequest userRequest);
+
+	ResponseEntity<ResponseStructure<List<UserResponse>>> fetchUsersByRoleInAcademicProgram(int programId, String role);
 
 
 }

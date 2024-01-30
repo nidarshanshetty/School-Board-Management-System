@@ -11,6 +11,7 @@ import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.NoAssociatedObjectFoundException;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
@@ -19,6 +20,7 @@ import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
+import com.school.sbm.exception.UserRoleIsNotExistedException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler 
@@ -97,5 +99,15 @@ public class ApplicationExceptionHandler
 	public ResponseEntity<Object> handleStudentCannotBeAssignedToAcademicProgramException(StudentCannotBeAssignedToAcademicProgram ex)
 	{
 		return structure(HttpStatus.BAD_REQUEST,ex.getMessage() ,"student cannot assign to academic program");
+	}
+	@ExceptionHandler(NoAssociatedObjectFoundException.class)
+	public ResponseEntity<Object> handleNoAssociatedObjectFoundException(NoAssociatedObjectFoundException ex)
+	{
+		return structure(HttpStatus.NOT_FOUND,ex.getMessage(),"user is not associated");
+	}
+	@ExceptionHandler(UserRoleIsNotExistedException.class)
+	public ResponseEntity<Object> handleUserRoleIsNotExistedException(UserRoleIsNotExistedException ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "invalid userrole");
 	}
 }
