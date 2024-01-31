@@ -289,6 +289,7 @@ public class ClassHourServiceImpl implements IClassHourService
 		for(ClassHour classHour:classHours)
 		{
 			int classHourId = classHour.getClassHourId();
+
 			ClassHour hour = classHourRepository.findById(classHourId)
 					.orElseThrow(()-> new ScheduleObjectNotFoundException(" not the exception"));
 

@@ -11,12 +11,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.school.sbm.entity.AcademicProgram;
+import com.school.sbm.entity.Schedule;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.User;
 import com.school.sbm.enums.UserRole;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
+import com.school.sbm.repository.IAcademicProgramRepository;
+import com.school.sbm.repository.IScheduleRepository;
 import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.SchoolRequest;
@@ -24,9 +28,17 @@ import com.school.sbm.responsedto.SchoolResponse;
 import com.school.sbm.service.ISchoolService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class SchoolServiceImpl  implements ISchoolService
 {
+	@Autowired
+	private IAcademicProgramRepository academicProgramRepository;
+
+	@Autowired
+	private IScheduleRepository iScheduleRepository;
+
 	@Autowired
 	private IUserRepository  iUserRepository;
 
@@ -180,6 +192,35 @@ public class SchoolServiceImpl  implements ISchoolService
 
 		return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.FOUND);
 
+	}
+
+	@Transactional
+	public void deleteSoftDeletedData()
+	{
+
+		List<School> deletedSchools = iSchoolRepository.findAllByIsDeleted(true);
+		for(School deletedSchool:deletedSchools)
+		{
+			Integer schoolId = deletedSchool.getSchoolId();
+			School school = iSchoolRepository.findById(schoolId).get();
+			Schedule schedule = school.getSchedule();
+			iScheduleRepository.delete(schedule);
+
+			List<AcademicProgram> academicPrograms = school.getAList();
+			for(AcademicProgram academicProgram:academicPrograms)
+			{
+				academicProgram.setSchool(null);
+				academicProgramRepository.save(academicProgram);
+			}
+			List<User> users = iUserRepository.findBySchool(school);
+			for(User user:users)
+			{
+				user.setSchool(null);
+				iUserRepository.save(user);
+			}
+			iSchoolRepository.delete(school);
+
+		}
 	}
 
 }

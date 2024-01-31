@@ -45,7 +45,6 @@ public class SchoolController
 		return iSchoolService.findAllSchool();
 	}
 
-
 	@DeleteMapping("/schools/{schoolId}")
 	public ResponseEntity<ResponseStructure<SchoolResponse>> deleteSchool(@PathVariable int schoolId)
 	{

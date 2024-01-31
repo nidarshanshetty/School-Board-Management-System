@@ -10,20 +10,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
+import com.school.sbm.entity.ClassHour;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.Subject;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
+import com.school.sbm.repository.IClassHourRepository;
 import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.reqeustdto.AcademicProgramRequest;
 import com.school.sbm.responsedto.AcademicProgramResponse;
 import com.school.sbm.service.IAcademicProgramService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class AcademicProgramServiceImpl implements IAcademicProgramService
 {
+	@Autowired
+	private IClassHourRepository classHourRepository;
 
 	@Autowired
 	private IAcademicProgramRepository iAcademicProgramRepository;
@@ -140,7 +146,21 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 			responseStructure.setData(mapToAcademicProgramResponse(save));
 			return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(responseStructure,HttpStatus.OK);
 		}
+	}
+	@Transactional
+	public void deleteSoftDeletedData()
+	{
+		List<AcademicProgram> academicPrograms = iAcademicProgramRepository.findByIsDeleted(true);
+		for(AcademicProgram academicProgram:academicPrograms)
+		{
+			List<ClassHour> listOfClassHours = academicProgram.getListOfClassHours();
+			for(ClassHour listHour:listOfClassHours)
+			{
+				classHourRepository.delete(listHour);;
+			}
+			iAcademicProgramRepository.delete(academicProgram);
 
+		}
 	}
 
 }

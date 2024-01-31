@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
+import com.school.sbm.entity.ClassHour;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.Subject;
 import com.school.sbm.entity.User;
@@ -28,6 +29,7 @@ import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.exception.UserRoleIsNotExistedException;
 import com.school.sbm.repository.IAcademicProgramRepository;
+import com.school.sbm.repository.IClassHourRepository;
 import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.UserRequest;
@@ -35,9 +37,13 @@ import com.school.sbm.responsedto.UserResponse;
 import com.school.sbm.service.IUserService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserServiceImpl implements IUserService
 {
+	@Autowired
+	private IClassHourRepository classHourRepository;
 
 	@Autowired
 	private IAcademicProgramRepository IAcademicProgramRepository;
@@ -324,7 +330,40 @@ public class UserServiceImpl implements IUserService
 			throw new UserRoleIsNotExistedException("specified userrole is incorrect");
 		}
 	}
+	@Transactional
+	public void deleteSoftDeletedData()
+	{
+		List<User> deletedUsers = iUserRepository.findAllByIsDeleted(true); 
 
+		for(User deletedUser:deletedUsers)
+		{
+			Integer userId = deletedUser.getUserId();
+			User user = iUserRepository.findById(userId).get();
+
+			List<ClassHour> classHours = classHourRepository.findByUser(user);
+			for(ClassHour classHour:classHours)
+			{
+				classHour.setUser(null);
+				classHourRepository.save(classHour);
+			}
+
+			user.setSubject(null);
+			user.setSchool(null);
+
+			List<AcademicProgram> academicPrograms = user.getAcademicProgram();
+			for(AcademicProgram academicProgram:academicPrograms)
+			{
+				academicProgram.setUsers(null);
+				IAcademicProgramRepository.save(academicProgram);
+			}
+
+			iUserRepository.save(user);
+
+			iUserRepository.delete(deletedUser);
+
+
+		}
+	}
 
 
 }
