@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.school.sbm.entity.AcademicProgram;
+import com.school.sbm.entity.ClassHour;
 import com.school.sbm.entity.Schedule;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.User;
@@ -20,6 +21,7 @@ import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
+import com.school.sbm.repository.IClassHourRepository;
 import com.school.sbm.repository.IScheduleRepository;
 import com.school.sbm.repository.ISchoolRepository;
 import com.school.sbm.repository.IUserRepository;
@@ -33,6 +35,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class SchoolServiceImpl  implements ISchoolService
 {
+	@Autowired
+	private IClassHourRepository classHourRepository;
 	@Autowired
 	private IAcademicProgramRepository academicProgramRepository;
 
@@ -209,8 +213,12 @@ public class SchoolServiceImpl  implements ISchoolService
 			List<AcademicProgram> academicPrograms = school.getAList();
 			for(AcademicProgram academicProgram:academicPrograms)
 			{
-				academicProgram.setSchool(null);
-				academicProgramRepository.save(academicProgram);
+				List<ClassHour> listOfClassHours = academicProgram.getListOfClassHours();
+				for(ClassHour classHour:listOfClassHours)
+				{
+					classHourRepository.delete(classHour);
+				}
+				academicProgramRepository.delete(academicProgram);
 			}
 			List<User> users = iUserRepository.findBySchool(school);
 			for(User user:users)
