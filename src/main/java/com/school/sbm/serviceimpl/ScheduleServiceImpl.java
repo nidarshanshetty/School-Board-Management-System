@@ -1,6 +1,7 @@
 package com.school.sbm.serviceimpl;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,10 @@ import org.springframework.stereotype.Service;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.Schedule;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
+import com.school.sbm.exception.InvalidBreakTimeException;
+import com.school.sbm.exception.InvalidClassHourEndException;
+import com.school.sbm.exception.InvalidLunchTimeException;
+import com.school.sbm.exception.InvalidOpenTimeAndCloseTime;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.repository.ISchoolRepository;
@@ -73,6 +78,60 @@ public class ScheduleServiceImpl implements IScheduleService
 		if(school.getSchedule()==null)
 		{
 
+			LocalTime opensAt = scheduleRequest.getOpensAt();
+			LocalTime closesAt = scheduleRequest.getClosesAt();
+			int classHoursPerDay = scheduleRequest.getClassHoursPerDay();
+			int classHourLengthInMinute = scheduleRequest.getClassHourLengthInMinute();
+			LocalTime breakTime = scheduleRequest.getBreakTime();
+			int breakLengthInMinute = scheduleRequest.getBreakLengthInMinute();
+			LocalTime lunchTime = scheduleRequest.getLunchTime();
+			int lunchLengthInMinute = scheduleRequest.getLunchLengthInMinute();
+
+
+			if(opensAt.isAfter(breakTime)||opensAt.isAfter(lunchTime)||closesAt.isBefore(breakTime)||closesAt.isBefore(lunchTime)||closesAt.isBefore(opensAt)||opensAt.equals(closesAt))
+			{
+				throw new InvalidOpenTimeAndCloseTime("invalid open time or close time");
+			}
+
+			LocalTime classEnds =null;
+			for(int i=1;i<classHoursPerDay+2;i++)
+			{
+				LocalTime classStarts = opensAt;
+				classEnds =classStarts.plusMinutes(classHourLengthInMinute);
+
+				if(breakTime.isBefore(classEnds)&&breakTime.isAfter(classStarts))
+				{
+					throw new InvalidBreakTimeException("invalid breaktime ,breaktime must start "+classEnds);
+				}
+				else 
+				{
+					if(breakTime.equals(classEnds))
+					{
+						opensAt=breakTime.plusMinutes(breakLengthInMinute);
+						continue;
+					}
+				}
+
+				if(lunchTime.isBefore(classEnds)&&lunchTime.isAfter(classStarts))
+				{
+					throw new InvalidLunchTimeException("invalid lunchtime ,breaktime must start "+classEnds);
+				}
+				else 
+				{
+					if(lunchTime.equals(classEnds))
+					{
+						opensAt=lunchTime.plusMinutes(lunchLengthInMinute);
+						continue;	
+					}
+				}
+				opensAt=classEnds;
+
+			}
+			if(!classEnds.equals(closesAt))
+			{
+				throw new InvalidClassHourEndException("invalid class hour ending time ,class must end "+closesAt);
+			}
+
 			Schedule schedule = iScheduleRepository.save(mapToScheduleRequest(scheduleRequest));
 			school.setSchedule(schedule);
 			iSchoolRepository.save(school);
@@ -118,9 +177,63 @@ public class ScheduleServiceImpl implements IScheduleService
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(int scheduleId,
 			ScheduleRequest scheduleRequest) {
 
+
+
+
 		Schedule schedule = iScheduleRepository.findById(scheduleId)
 				.map(u->{
+
+
+					LocalTime opensAt = scheduleRequest.getOpensAt();
+					LocalTime closesAt = scheduleRequest.getClosesAt();
+					int classHoursPerDay = scheduleRequest.getClassHoursPerDay();
+					int classHourLengthInMinute = scheduleRequest.getClassHourLengthInMinute();
+					LocalTime breakTime = scheduleRequest.getBreakTime();
+					int breakLengthInMinute = scheduleRequest.getBreakLengthInMinute();
+					LocalTime lunchTime = scheduleRequest.getLunchTime();
+					int lunchLengthInMinute = scheduleRequest.getLunchLengthInMinute();
+
+
+
 					Schedule mapToScheduleRequest = mapToScheduleRequest(scheduleRequest);
+					LocalTime classEnds =null;
+
+					for(int i=1;i<classHoursPerDay+2;i++)
+					{
+						LocalTime classStarts = opensAt;
+						classEnds =classStarts.plusMinutes(classHourLengthInMinute);
+
+						if(breakTime.isBefore(classEnds)&&breakTime.isAfter(classStarts))
+						{
+							throw new InvalidBreakTimeException("invalid breaktime ,breaktime must start "+classEnds);
+						}
+						else 
+						{
+							if(breakTime.equals(classEnds))
+							{
+								opensAt=breakTime.plusMinutes(breakLengthInMinute);
+								continue;
+							}
+						}
+
+						if(lunchTime.isBefore(classEnds)&&lunchTime.isAfter(classStarts))
+						{
+							throw new InvalidLunchTimeException("invalid lunchtime ,breaktime must start "+classEnds);
+						}
+						else 
+						{
+							if(lunchTime.equals(classEnds))
+							{
+								opensAt=lunchTime.plusMinutes(lunchLengthInMinute);
+								continue;	
+							}
+						}
+						opensAt=classEnds;
+					}
+					if(!classEnds.equals(closesAt))
+					{
+						throw new InvalidClassHourEndException("invalid class hour ending time ,class must end "+closesAt);
+					}
 					mapToScheduleRequest.setScheduleId(scheduleId);
 					return iScheduleRepository.save( mapToScheduleRequest );
 				})

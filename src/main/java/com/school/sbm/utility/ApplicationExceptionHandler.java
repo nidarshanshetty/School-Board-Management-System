@@ -11,6 +11,12 @@ import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
 import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.ClassHourAlreadyGeneratedException;
+import com.school.sbm.exception.CurrentClassHourEmptyException;
+import com.school.sbm.exception.InvalidBreakTimeException;
+import com.school.sbm.exception.InvalidClassHourEndException;
+import com.school.sbm.exception.InvalidLunchTimeException;
+import com.school.sbm.exception.InvalidOpenTimeAndCloseTime;
 import com.school.sbm.exception.NoAssociatedObjectFoundException;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
@@ -108,6 +114,38 @@ public class ApplicationExceptionHandler
 	@ExceptionHandler(UserRoleIsNotExistedException.class)
 	public ResponseEntity<Object> handleUserRoleIsNotExistedException(UserRoleIsNotExistedException ex)
 	{
-		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "invalid userrole");
+		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "invalid userrole");
+	}
+	@ExceptionHandler(CurrentClassHourEmptyException.class)
+	public ResponseEntity<Object> handleCurrentClassHourEmptyException( CurrentClassHourEmptyException ex)
+	{
+		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "current class hour is not existe") ;
+	}
+	@ExceptionHandler(ClassHourAlreadyGeneratedException.class)
+	public ResponseEntity<Object> handleClassHourAlreadyGeneratedException(ClassHourAlreadyGeneratedException ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(), "class hours already generated");
+	}
+
+	@ExceptionHandler(InvalidOpenTimeAndCloseTime.class)
+	public ResponseEntity<Object> handleInvalidOpenTimeAndCloseTime(InvalidOpenTimeAndCloseTime ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "invalid open time or close time");
+	}
+
+	@ExceptionHandler(InvalidBreakTimeException.class)
+	public ResponseEntity<Object> handleInvalidBreakTimeException(InvalidBreakTimeException ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(),"invalid breaktime");
+	}
+	@ExceptionHandler(InvalidLunchTimeException.class)
+	public ResponseEntity<Object> handleInvalidLunchTimeException(InvalidLunchTimeException ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(),"invalid lunchtime");
+	}
+	@ExceptionHandler(InvalidClassHourEndException.class)
+	public ResponseEntity<Object> handleInvalidClassHourEndException(InvalidClassHourEndException ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(),"invalid classhour ending");
 	}
 }

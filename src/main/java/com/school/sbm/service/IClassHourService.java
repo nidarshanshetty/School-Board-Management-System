@@ -15,4 +15,6 @@ public interface IClassHourService
 
 	ResponseEntity<ResponseStructure<List<ClassHourResponse>>> updateClassHour(List<ClassHourRequest> classHourRequests);
 
+	ResponseEntity<ResponseStructure<List<ClassHourResponse>>> autoRepeatWeeklyTimeTable(int programId);
+
 }

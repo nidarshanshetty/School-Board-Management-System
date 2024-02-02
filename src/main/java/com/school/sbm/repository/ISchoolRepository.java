@@ -14,6 +14,4 @@ public interface ISchoolRepository extends JpaRepository<School, Integer>
 	List<School> findAllByIsDeleted(boolean b);
 
 
-
-
 }

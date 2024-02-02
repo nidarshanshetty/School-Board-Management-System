@@ -42,6 +42,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class UserServiceImpl implements IUserService
 {
+
 	@Autowired
 	private IClassHourRepository classHourRepository;
 

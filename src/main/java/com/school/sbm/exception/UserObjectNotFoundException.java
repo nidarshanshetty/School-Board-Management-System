@@ -1,5 +1,10 @@
 package com.school.sbm.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class UserObjectNotFoundException  extends RuntimeException
 {
 
@@ -9,13 +14,4 @@ public class UserObjectNotFoundException  extends RuntimeException
 	private static final long serialVersionUID = 1L;
 	private String message;
 
-	public UserObjectNotFoundException(String message)
-	{
-		this.message=message;
-	}
-
-	public String getMessage()
-	{
-		return message;
-	}
 }

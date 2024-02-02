@@ -23,9 +23,10 @@ public class ScheduledJobs
 	@Scheduled(fixedDelay = 1000l)
 	public void test()
 	{
-		userServiceImpl.deleteSoftDeletedData();
-		academicProgramServiceImpl.deleteSoftDeletedData();
-		schoolServiceImpl.deleteSoftDeletedData();
+		//		userServiceImpl.deleteSoftDeletedData();
+		//		academicProgramServiceImpl.deleteSoftDeletedData();
+		//		schoolServiceImpl.deleteSoftDeletedData();
+
 	}
 
 

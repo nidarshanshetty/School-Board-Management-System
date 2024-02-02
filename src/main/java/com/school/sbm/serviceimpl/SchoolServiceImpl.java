@@ -37,6 +37,7 @@ public class SchoolServiceImpl  implements ISchoolService
 {
 	@Autowired
 	private IClassHourRepository classHourRepository;
+
 	@Autowired
 	private IAcademicProgramRepository academicProgramRepository;
 

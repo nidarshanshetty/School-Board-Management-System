@@ -31,5 +31,11 @@ public class ClassHourController
 	{
 		return iClassHourService.updateClassHour(classHourRequests);
 	}
+
+	@PutMapping("/academic-program/{programId}/class-hours")
+	public ResponseEntity<ResponseStructure<List<ClassHourResponse>>>autoRepeatWeeklyTimeTable(@PathVariable int programId)
+	{
+		return iClassHourService.autoRepeatWeeklyTimeTable(programId);
+	}
 }
 
