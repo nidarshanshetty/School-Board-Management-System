@@ -101,14 +101,6 @@ public class ClassHourServiceImpl implements IClassHourService
 		if (schedule != null) {
 
 
-			//			LocalDateTime classBeginsAt = academicProgram.getListOfClassHours().getFirst().getBeginsAt();
-			//			LocalDateTime classEndsAt = academicProgram.getListOfClassHours().getLast().getEndsAt();
-			//
-			//			if ((LocalDate.now().isAfter(classBeginsAt.toLocalDate())
-			//					&& !LocalDate.now().isBefore(classEndsAt.toLocalDate()))
-			//					&& (LocalDate.now().isAfter(academicProgram.getBeginsAt())
-			//							&& LocalDate.now().isBefore(academicProgram.getEndsAt()))) {
-
 			if(academicProgram.getListOfClassHours().isEmpty())
 			{
 
