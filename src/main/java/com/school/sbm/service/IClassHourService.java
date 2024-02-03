@@ -1,8 +1,10 @@
 package com.school.sbm.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.school.sbm.reqeustdto.ClassHourRequest;
 import com.school.sbm.reqeustdto.ExcelRequest;
@@ -19,6 +21,8 @@ public interface IClassHourService
 	ResponseEntity<ResponseStructure<List<ClassHourResponse>>> autoRepeatWeeklyTimeTable(int programId);
 
 	String writeExcelSheet(int programId, ExcelRequest excelRequest);
+
+	ResponseEntity<?> writeToExcel(MultipartFile file, LocalDate fromDate, LocalDate toDate,int programId)throws Exception;
 
 
 }

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class SubjectRequest
 {
-	@NotNull(message ="subjectNames cannot be null")
-	@NotBlank(message ="subjectNames cannot be blank")
+//	@NotNull(message ="subjectNames cannot be null")
+//	@NotBlank(message ="subjectNames cannot be blank")
 	private List<String> subjectNames;
 }

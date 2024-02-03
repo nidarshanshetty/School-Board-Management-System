@@ -242,7 +242,7 @@ public class UserServiceImpl implements IUserService
 		}
 		else
 		{
-			throw new AdminNotFoundException("admin not found");
+			throw new AdminNotFoundException("only admin can register");
 		}
 
 	}
