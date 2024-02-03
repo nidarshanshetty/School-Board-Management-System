@@ -1,8 +1,8 @@
 package com.school.sbm.entity;
 
-import java.time.DayOfWeek;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,11 +27,14 @@ public class School
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer schoolId;
+	@Column(unique = true)
 	private String schoolName;
+	@Column(unique = true)
 	private Long contactNo;
+	@Column(unique = true)
 	private String emailId;
+	@Column(unique = true)
 	private String address;
-	private DayOfWeek weekOffDay;
 	private boolean isDeleted;
 
 	@OneToOne

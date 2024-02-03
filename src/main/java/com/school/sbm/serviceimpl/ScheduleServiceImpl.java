@@ -15,7 +15,7 @@ import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.exception.InvalidBreakTimeException;
 import com.school.sbm.exception.InvalidClassHourEndException;
 import com.school.sbm.exception.InvalidLunchTimeException;
-import com.school.sbm.exception.InvalidOpenTimeAndCloseTime;
+import com.school.sbm.exception.InvalidOpenTimeAndCloseTimeException;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.repository.ISchoolRepository;
@@ -90,7 +90,7 @@ public class ScheduleServiceImpl implements IScheduleService
 
 			if(opensAt.isAfter(breakTime)||opensAt.isAfter(lunchTime)||closesAt.isBefore(breakTime)||closesAt.isBefore(lunchTime)||closesAt.isBefore(opensAt)||opensAt.equals(closesAt))
 			{
-				throw new InvalidOpenTimeAndCloseTime("invalid open time or close time");
+				throw new InvalidOpenTimeAndCloseTimeException("invalid open time or close time");
 			}
 
 			LocalTime classEnds =null;

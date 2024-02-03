@@ -22,7 +22,7 @@ import com.school.sbm.enums.UserRole;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
-import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgramException;
 import com.school.sbm.exception.NoAssociatedObjectFoundException;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sbm.exception.SubjectNotFoundException;
@@ -150,7 +150,7 @@ public class UserServiceImpl implements IUserService
 
 		if(user.getUserRole().equals(UserRole.ADMIN))
 		{
-			throw new AdmineCannotBeAssignedToAcademicProgram("admin cannot assign");
+			throw new AdmineCannotBeAssignedToAcademicProgramException("admin cannot assign");
 		}
 		else
 		{
@@ -296,7 +296,7 @@ public class UserServiceImpl implements IUserService
 		{
 			if(UserRole.ADMIN.equals(userole))
 			{
-				throw new AdmineCannotBeAssignedToAcademicProgram("admine is not assigned to academic program");
+				throw new AdmineCannotBeAssignedToAcademicProgramException("admine is not assigned to academic program");
 			}
 			else
 			{

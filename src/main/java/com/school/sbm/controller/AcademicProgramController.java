@@ -17,6 +17,8 @@ import com.school.sbm.responsedto.AcademicProgramResponse;
 import com.school.sbm.service.IAcademicProgramService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class AcademicProgramController 
 {
@@ -25,17 +27,17 @@ public class AcademicProgramController
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/schools/{schoolId}/academic-programs")
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>>saveAcademicProgram(@PathVariable int schoolId,@RequestBody AcademicProgramRequest academicProgramRequest)
+	public ResponseEntity<ResponseStructure<AcademicProgramResponse>>saveAcademicProgram(@PathVariable int schoolId,@RequestBody  @Valid AcademicProgramRequest academicProgramRequest)
 	{
 		return iAcademicProgramService.saveAcademicProgram(schoolId,academicProgramRequest);
 	}
-	
+
 	@GetMapping("/schools/{schoolId}/academic-programs")
 	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>findAcademicProgram(@PathVariable int schoolId)
 	{
 		return iAcademicProgramService.findAcademicProgram(schoolId);
 	}
-	
+
 	@DeleteMapping("/academic-programs/{programId}")
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>>deleteAcademicProgram(@PathVariable int programId)
 	{

@@ -153,6 +153,7 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 		List<AcademicProgram> academicPrograms = iAcademicProgramRepository.findByIsDeleted(true);
 		for(AcademicProgram academicProgram:academicPrograms)
 		{
+			academicProgram.setSubjects(null);
 			List<ClassHour> listOfClassHours = academicProgram.getListOfClassHours();
 			for(ClassHour listHour:listOfClassHours)
 			{

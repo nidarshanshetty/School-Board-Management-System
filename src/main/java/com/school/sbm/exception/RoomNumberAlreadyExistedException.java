@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class StudentCannotBeAssignedToAcademicProgram extends RuntimeException 
+public class RoomNumberAlreadyExistedException extends RuntimeException
 {
+
 	/**
 	 * 
 	 */

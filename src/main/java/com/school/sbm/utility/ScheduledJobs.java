@@ -31,16 +31,16 @@ public class ScheduledJobs
 	@Autowired
 	AcademicProgramServiceImpl academicProgramServiceImpl;
 
-	@Scheduled(fixedDelay = 1000l)
+	@Scheduled(fixedDelay = 10000l)
 	public void test()
 	{
-		//		userServiceImpl.deleteSoftDeletedData();
-		//		academicProgramServiceImpl.deleteSoftDeletedData();
-		//		schoolServiceImpl.deleteSoftDeletedData();
+		userServiceImpl.deleteSoftDeletedData();
+		academicProgramServiceImpl.deleteSoftDeletedData();
+		schoolServiceImpl.deleteSoftDeletedData();
 
 	}
 
-	@Scheduled(cron = "0 0 0 * MON ")
+	@Scheduled(cron = "0 0 0 * * MON ")
 	public void classHourWeekly()
 	{
 		List<AcademicProgram> academicPrograms = academicProgramRepository.findAll();

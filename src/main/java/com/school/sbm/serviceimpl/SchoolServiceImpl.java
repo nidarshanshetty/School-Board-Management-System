@@ -1,6 +1,5 @@
 package com.school.sbm.serviceimpl;
 
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +63,6 @@ public class SchoolServiceImpl  implements ISchoolService
 				.contactNo(schoolRequest.getContactNo())
 				.emailId(schoolRequest.getEmailId())
 				.address(schoolRequest.getAddress())
-				.weekOffDay(DayOfWeek.valueOf(schoolRequest.getWeekOffDay().toUpperCase()))
 				.build();
 	}
 
@@ -76,7 +74,6 @@ public class SchoolServiceImpl  implements ISchoolService
 				.contactNo(school.getContactNo())
 				.emailId(school.getEmailId())
 				.address(school.getAddress())
-				.weekOffDay(school.getWeekOffDay())
 				.build();
 	}
 
@@ -215,6 +212,7 @@ public class SchoolServiceImpl  implements ISchoolService
 			for(AcademicProgram academicProgram:academicPrograms)
 			{
 				List<ClassHour> listOfClassHours = academicProgram.getListOfClassHours();
+				
 				for(ClassHour classHour:listOfClassHours)
 				{
 					classHourRepository.delete(classHour);

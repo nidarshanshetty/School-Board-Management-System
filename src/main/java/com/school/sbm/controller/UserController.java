@@ -18,6 +18,8 @@ import com.school.sbm.responsedto.UserResponse;
 import com.school.sbm.service.IUserService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 public class UserController 
@@ -29,14 +31,14 @@ public class UserController
 
 
 	@PostMapping("/users/register")
-	public ResponseEntity<ResponseStructure<UserResponse>>registerAdmin(@RequestBody UserRequest userRequest)
+	public ResponseEntity<ResponseStructure<UserResponse>>registerAdmin(@RequestBody @Valid UserRequest userRequest)
 	{
 		return iUserService.registerAdmin(userRequest);
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/users")
-	public ResponseEntity<ResponseStructure<UserResponse>>addOtherUsers(@RequestBody UserRequest userRequest)
+	public ResponseEntity<ResponseStructure<UserResponse>>addOtherUsers(@RequestBody @Valid UserRequest userRequest)
 	{
 		return iUserService.addOtherUsers(userRequest);
 	}

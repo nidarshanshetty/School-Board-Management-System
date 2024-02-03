@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class InvalidOpenTimeAndCloseTime extends RuntimeException
+public class InvalidOpenTimeAndCloseTimeException extends RuntimeException
 {
 	/**
 	 * 

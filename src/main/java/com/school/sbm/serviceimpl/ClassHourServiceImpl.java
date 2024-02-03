@@ -1,13 +1,18 @@
 package com.school.sbm.serviceimpl;
 
+import java.io.FileOutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +30,8 @@ import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.ClassHourAlreadyGeneratedException;
 import com.school.sbm.exception.CurrentClassHourEmptyException;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
+import com.school.sbm.exception.RoomNumberAlreadyExistedException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
-import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgram;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
@@ -34,6 +39,7 @@ import com.school.sbm.repository.IClassHourRepository;
 import com.school.sbm.repository.ISubjectRepository;
 import com.school.sbm.repository.IUserRepository;
 import com.school.sbm.reqeustdto.ClassHourRequest;
+import com.school.sbm.reqeustdto.ExcelRequest;
 import com.school.sbm.responsedto.ClassHourResponse;
 import com.school.sbm.service.IClassHourService;
 import com.school.sbm.utility.ResponseStructure;
@@ -267,14 +273,14 @@ public class ClassHourServiceImpl implements IClassHourService
 					}
 					else
 					{
-						//room no existed
-						throw new StudentCannotBeAssignedToAcademicProgram("room num existed");
+
+						throw new RoomNumberAlreadyExistedException("room num existed");
 					}
 				}
 				else
 				{
-					//subject not found
-					throw new StudentCannotBeAssignedToAcademicProgram("subject not found");
+
+					throw new SubjectNotFoundException("subject not found");
 				}
 			}
 			else
@@ -335,21 +341,93 @@ public class ClassHourServiceImpl implements IClassHourService
 		for(ClassHour classHour:classHoursForCurrentWeek)
 		{
 
+			@SuppressWarnings("static-access")
 			ClassHour build = classHour.builder()
-					.subject(classHour.getSubject())
-					.roomNo(classHour.getRoomNo())
-					.academicPrograms(academicProgram)
-					.beginsAt(classHour.getBeginsAt().plusWeeks(1))
-					.endsAt(classHour.getEndsAt().plusWeeks(1))
-					.classStatus(classHour.getClassStatus())
-					.user(classHour.getUser())
-					.build();
+			.subject(classHour.getSubject())
+			.roomNo(classHour.getRoomNo())
+			.academicPrograms(academicProgram)
+			.beginsAt(classHour.getBeginsAt().plusWeeks(1))
+			.endsAt(classHour.getEndsAt().plusWeeks(1))
+			.classStatus(classHour.getClassStatus())
+			.user(classHour.getUser())
+			.build();
 
 			duplicatedClassHoursForNextWeek.add(build);
 		}
 		List<ClassHour> saveAll = classHourRepository.saveAll(duplicatedClassHoursForNextWeek);
 		return saveAll;
 	}
+
+	@Override
+	public String writeExcelSheet(int programId, ExcelRequest excelRequest) 
+	{
+
+		String folderPath = excelRequest.getFilepath();
+		String filePath=folderPath+"\\test.xlsx";
+
+
+		AcademicProgram academicProgram = academicProgramRepository.findById(programId)
+				.orElseThrow(()-> new AcademicProgamNotFoundException("academic program not found "));
+
+		LocalDateTime fromTime = excelRequest.getFromDate().atTime(LocalTime.MIDNIGHT);
+		LocalDateTime toTime = excelRequest.getToDate().atTime(LocalTime.MIDNIGHT).plusDays(1);
+
+		List<ClassHour> classHours=classHourRepository.findAllByAcademicProgramsAndBeginsAtBetween(academicProgram,fromTime,toTime);
+
+		XSSFWorkbook workbook=new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet();
+
+		int rowNumber =0;
+		XSSFRow header = sheet.createRow(rowNumber);
+		header.createCell(0).setCellValue("Date");
+		header.createCell(1).setCellValue("Begin Time");
+		header.createCell(2).setCellValue("End Time");
+		header.createCell(3).setCellValue("Subject");
+		header.createCell(4).setCellValue("Teacher");
+		header.createCell(5).setCellValue("Room No");
+
+
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		for(ClassHour classHour:classHours)
+		{			
+
+
+			String subjectName ="NOT ASSINED";
+			String userName="NOT ASSINED";
+
+			if(classHour.getSubject()!=null)
+			{
+				subjectName=classHour.getSubject().getSubjectNames();
+			}
+			if(classHour.getUser()!=null)
+			{
+				userName=classHour.getUser().getUsername();
+			}
+
+			XSSFRow row = sheet.createRow(++rowNumber);
+			row.createCell(0).setCellValue(dateFormatter.format(classHour.getBeginsAt()));
+			row.createCell(1).setCellValue(timeFormatter.format(classHour.getBeginsAt()));
+			row.createCell(2).setCellValue(timeFormatter.format(classHour.getEndsAt()));
+			row.createCell(3).setCellValue(subjectName);
+			row.createCell(4).setCellValue(userName);
+			row.createCell(5).setCellValue(classHour.getRoomNo());
+
+		}
+
+		try {
+			workbook.write(new FileOutputStream(filePath));
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		} 
+
+
+		return "success";
+	}
+
 
 
 }

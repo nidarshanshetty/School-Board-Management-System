@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class AdmineCannotBeAssignedToAcademicProgram extends RuntimeException
+public class StudentCannotBeAssignedToAcademicProgramException extends RuntimeException 
 {
 	/**
 	 * 

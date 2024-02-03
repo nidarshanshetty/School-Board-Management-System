@@ -18,6 +18,8 @@ import com.school.sbm.responsedto.SchoolResponse;
 import com.school.sbm.service.ISchoolService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class SchoolController 
 {
@@ -27,14 +29,14 @@ public class SchoolController
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/users/{userId}/schools")
-	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(@PathVariable Integer userId,@RequestBody  SchoolRequest school)
+	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(@PathVariable Integer userId,@RequestBody @Valid SchoolRequest school)
 	{
 		return iSchoolService.saveSchool(userId,school);
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/schools/{schoolId}")
-	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(@PathVariable int schoolId,@RequestBody SchoolRequest school)
+	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(@PathVariable int schoolId,@RequestBody @Valid SchoolRequest school)
 	{
 		return iSchoolService.updateSchool(schoolId,school);
 	}

@@ -10,20 +10,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.AdminAlreadyExistExceptoon;
 import com.school.sbm.exception.AdminNotFoundException;
-import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.AdmineCannotBeAssignedToAcademicProgramException;
 import com.school.sbm.exception.ClassHourAlreadyGeneratedException;
 import com.school.sbm.exception.CurrentClassHourEmptyException;
 import com.school.sbm.exception.InvalidBreakTimeException;
 import com.school.sbm.exception.InvalidClassHourEndException;
 import com.school.sbm.exception.InvalidLunchTimeException;
-import com.school.sbm.exception.InvalidOpenTimeAndCloseTime;
+import com.school.sbm.exception.InvalidOpenTimeAndCloseTimeException;
 import com.school.sbm.exception.NoAssociatedObjectFoundException;
 import com.school.sbm.exception.OnlyTeacherCanBeAssignedToSubjectException;
+import com.school.sbm.exception.RoomNumberAlreadyExistedException;
 import com.school.sbm.exception.ScheduleAlreadyExistException;
 import com.school.sbm.exception.ScheduleObjectNotFoundException;
 import com.school.sbm.exception.SchoolAlreadyExistException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
-import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgram;
+import com.school.sbm.exception.StudentCannotBeAssignedToAcademicProgramException;
 import com.school.sbm.exception.SubjectNotFoundException;
 import com.school.sbm.exception.UserObjectNotFoundException;
 import com.school.sbm.exception.UserRoleIsNotExistedException;
@@ -86,8 +87,8 @@ public class ApplicationExceptionHandler
 	{
 		return structure(HttpStatus.NOT_FOUND, ex.getMessage(), "academic Program Not Found By the specified Id");
 	}
-	@ExceptionHandler(AdmineCannotBeAssignedToAcademicProgram.class)
-	public ResponseEntity<Object> handleAdmineCannotBeAssignedToAcademicProgram(AdmineCannotBeAssignedToAcademicProgram ex)
+	@ExceptionHandler(AdmineCannotBeAssignedToAcademicProgramException.class)
+	public ResponseEntity<Object> handleAdmineCannotBeAssignedToAcademicProgram(AdmineCannotBeAssignedToAcademicProgramException ex)
 	{
 		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "admine cannot assign to academic program");
 	}
@@ -101,8 +102,8 @@ public class ApplicationExceptionHandler
 	{
 		return structure(HttpStatus.NOT_FOUND,ex.getMessage(), "subject not found by the specified Id");
 	}
-	@ExceptionHandler(StudentCannotBeAssignedToAcademicProgram.class)
-	public ResponseEntity<Object> handleStudentCannotBeAssignedToAcademicProgramException(StudentCannotBeAssignedToAcademicProgram ex)
+	@ExceptionHandler(StudentCannotBeAssignedToAcademicProgramException.class)
+	public ResponseEntity<Object> handleStudentCannotBeAssignedToAcademicProgramException(StudentCannotBeAssignedToAcademicProgramException ex)
 	{
 		return structure(HttpStatus.BAD_REQUEST,ex.getMessage() ,"student cannot assign to academic program");
 	}
@@ -127,8 +128,8 @@ public class ApplicationExceptionHandler
 		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(), "class hours already generated");
 	}
 
-	@ExceptionHandler(InvalidOpenTimeAndCloseTime.class)
-	public ResponseEntity<Object> handleInvalidOpenTimeAndCloseTime(InvalidOpenTimeAndCloseTime ex)
+	@ExceptionHandler(InvalidOpenTimeAndCloseTimeException.class)
+	public ResponseEntity<Object> handleInvalidOpenTimeAndCloseTime(InvalidOpenTimeAndCloseTimeException ex)
 	{
 		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), "invalid open time or close time");
 	}
@@ -148,4 +149,11 @@ public class ApplicationExceptionHandler
 	{
 		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(),"invalid classhour ending");
 	}
+	@ExceptionHandler(RoomNumberAlreadyExistedException.class)
+	public ResponseEntity<Object> handleRoomNumberAlreadyExistedException(RoomNumberAlreadyExistedException ex)
+	{
+		return structure(HttpStatus.BAD_REQUEST,ex.getMessage(), "room number already existed");
+	}
+
+
 }

@@ -15,6 +15,8 @@ import com.school.sbm.responsedto.ScheduleResponse;
 import com.school.sbm.service.IScheduleService;
 import com.school.sbm.utility.ResponseStructure;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 public class ScheduleController 
@@ -25,7 +27,7 @@ public class ScheduleController
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/schools/{schoolId}/schedules")
-	public ResponseEntity<ResponseStructure<ScheduleResponse>>saveSchedule(@PathVariable int schoolId,@RequestBody ScheduleRequest scheduleRequest)
+	public ResponseEntity<ResponseStructure<ScheduleResponse>>saveSchedule(@PathVariable int schoolId,@RequestBody @Valid ScheduleRequest scheduleRequest)
 	{
 		return iScheduleService.saveSchedule(schoolId,scheduleRequest);
 	}
@@ -38,7 +40,7 @@ public class ScheduleController
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/schedules/{scheduleId}")
-	public ResponseEntity<ResponseStructure<ScheduleResponse>>updateSchedule(@PathVariable int scheduleId,@RequestBody ScheduleRequest scheduleRequest)
+	public ResponseEntity<ResponseStructure<ScheduleResponse>>updateSchedule(@PathVariable int scheduleId,@RequestBody @Valid ScheduleRequest scheduleRequest)
 	{
 		return iScheduleService.updateSchedule(scheduleId,scheduleRequest);
 	}
