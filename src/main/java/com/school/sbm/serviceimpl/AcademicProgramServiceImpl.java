@@ -13,6 +13,7 @@ import com.school.sbm.entity.AcademicProgram;
 import com.school.sbm.entity.ClassHour;
 import com.school.sbm.entity.School;
 import com.school.sbm.entity.Subject;
+import com.school.sbm.enums.ProgramType;
 import com.school.sbm.exception.AcademicProgamNotFoundException;
 import com.school.sbm.exception.SchoolObjectNotFoundException;
 import com.school.sbm.repository.IAcademicProgramRepository;
@@ -49,7 +50,7 @@ public class AcademicProgramServiceImpl implements IAcademicProgramService
 	private AcademicProgram mapToAcademicProgramRequest(AcademicProgramRequest academicProgramRequest)
 	{
 		return AcademicProgram.builder()
-				.programType(academicProgramRequest.getProgramType())
+				.programType(ProgramType.valueOf(academicProgramRequest.getProgramType().toUpperCase()))
 				.programName(academicProgramRequest.getProgramName())
 				.beginsAt(academicProgramRequest.getBeginsAt())
 				.endsAt(academicProgramRequest.getEndsAt())

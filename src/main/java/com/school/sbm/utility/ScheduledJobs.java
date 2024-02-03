@@ -40,13 +40,14 @@ public class ScheduledJobs
 
 	}
 
-	@Scheduled(cron = "0 0 0 * * MON ")
+	@Scheduled(cron = "0 40 0 * * SUN ")
 	public void classHourWeekly()
 	{
+
 		List<AcademicProgram> academicPrograms = academicProgramRepository.findAll();
 		for(AcademicProgram academicProgram:academicPrograms)
 		{
-			//			classHourServiceImpl.autoRepeatWeeklyTimeTable(academicProgram);
+			classHourServiceImpl.autoRepeatWeeklyTimeTable(academicProgram);
 		}
 	}
 
